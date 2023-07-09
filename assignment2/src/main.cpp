@@ -8,6 +8,7 @@
 #include "object3ds/group.h"
 #include "raytrace/hit.h"
 #include "materials/material.h"
+#include "lights/light.h"
 
 // ========================================================
 // ========================================================
@@ -23,6 +24,7 @@ using utility::Image;
 using raytrace::Ray;
 using raytrace::Hit;
 using materials::Material;
+using lights::Light;
 
 char *input_file = NULL;
 int width = 100;
@@ -84,7 +86,20 @@ int main(int argc, char *argv[])
             
             if (has_intersect)
             {
-                result.SetPixel(i * width, j * height, tmp.getMaterial()->getDiffuseColor());
+                Vec3f shade_color(0, 0, 0);
+                for (int k = 0; k < scene_parser.getNumLights(); ++k)
+                {
+                    Light* light = scene_parser.getLight(k);
+                    Vec3f dir2light;
+                    Vec3f light_color;
+                    light->getIllumination(tmp.getIntersectionPoint(), dir2light, light_color);
+                    float diffuse = dir2light.Dot3(tmp.getNormal());
+                    diffuse = std::max(diffuse, 0.0f);
+                    shade_color += diffuse * (tmp.getMaterial()->getDiffuseColor() * light_color);
+                }
+                // add ambient light
+                shade_color += tmp.getMaterial()->getDiffuseColor() * scene_parser.getAmbientLight();
+                result.SetPixel(i * width, j * height, shade_color);
 
                 if (depth_file != NULL) 
                 {
