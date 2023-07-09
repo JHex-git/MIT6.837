@@ -1,10 +1,20 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
-#include "raytrace/ray.h"
+
+namespace utility
+{
+    class Vec2f;
+} // namespace utility
+
+namespace raytrace
+{
+    class Ray;
+} // namespace raytrace
 
 namespace cameras
 {
 using utility::Vec2f;
+using raytrace::Ray;
 class Camera
 {
 public:

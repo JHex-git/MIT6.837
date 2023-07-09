@@ -7,7 +7,9 @@
 // ====================================================================
 
 // You will extend this class in later assignments
-
+namespace materials
+{
+using utility::Vec3f; 
 class Material {
 
 public:
@@ -23,8 +25,10 @@ protected:
 
   // REPRESENTATION
   Vec3f diffuseColor;
-  
 };
+  
+} // namespace materials
+
 
 // ====================================================================
 // ====================================================================

@@ -4,21 +4,32 @@
 #include "utility/vectors.h"
 #include <assert.h>
 
-class Camera;
-class Material;
-class Object3D;
-class Group;
-class Sphere;
 
 #define MAX_PARSER_TOKEN_LENGTH 100
 
 // ====================================================================
 // ====================================================================
+namespace materials
+{
+  class Material;
+} // namespace materials
+
+namespace cameras
+{
+  class Camera;
+} // namespace cameras
 
 namespace object3ds
 {
+
+class Object3D;
+class Group;
+class Sphere;
+
 using utility::Vec2f;
 using utility::Vec3f;
+using materials::Material;
+using cameras::Camera;
 
 class SceneParser {
 

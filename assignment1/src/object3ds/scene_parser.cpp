@@ -4,7 +4,7 @@
 #include "scene_parser.h"
 #include "utility/matrix.h"
 #include "cameras/orthographic_camera.h" 
-#include "material.h"
+#include "materials/material.h"
 #include "object3ds/object3d.h"
 #include "object3ds/group.h" 
 #include "object3ds/sphere.h"
@@ -129,7 +129,7 @@ void SceneParser::parseMaterials() {
   int count = 0;
   while (num_materials > count) {
     getToken(token); 
-    if (!strcmp(token, "Material")) {
+    if (!strcmp(token, "PhongMaterial")) {
       materials[count] = parseMaterial();
     } else {
       printf ("Unknown token in parseMaterial: '%s'\n", token); 

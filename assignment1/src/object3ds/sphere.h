@@ -6,6 +6,9 @@
 namespace object3ds
 {
 using raytrace::Ray;
+using raytrace::Hit;
+using utility::Vec3f;
+
 class Sphere : public Object3D
 {
 public:

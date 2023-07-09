@@ -2,15 +2,22 @@
 #define _HIT_H
 
 #include "utility/vectors.h"
-#include "ray.h"
+#include "raytrace/ray.h"
 
-class Material;
+namespace materials
+{
+  class Material;
+} // namespace materials
+
 
 // ====================================================================
 // ====================================================================
+namespace raytrace
+{
+using utility::Vec3f;
+using materials::Material;
 
 class Hit {
-  
 public:
 
   // CONSTRUCTOR & DESTRUCTOR
@@ -48,5 +55,8 @@ inline std::ostream &operator<<(std::ostream &os, const Hit &h) {
 }
 // ====================================================================
 // ====================================================================
+  
+} // namespace raytrace
+
 
 #endif

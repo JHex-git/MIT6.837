@@ -7,6 +7,9 @@
 
 namespace object3ds
 {
+using raytrace::Hit;
+using raytrace::Ray;
+
 class Group : public Object3D
 {
 public:
