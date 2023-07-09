@@ -34,6 +34,7 @@ float depth_min = 0;
 float depth_max = 1;
 char *depth_file = NULL;
 char *normal_file = NULL;
+bool shade_back = false;
 
 constexpr float DELTA = 0.0001f;
 
@@ -63,6 +64,8 @@ int main(int argc, char *argv[])
         } else if (!strcmp(argv[i],"-normals")) {
             i++; assert (i < argc); 
             normal_file = argv[i];
+        } else if (!strcmp(argv[i],"-shade_back")) {
+            shade_back = true;
         } else {
             std::cerr << "whoops error with command line argument " << i << ": '" << argv[i] << "'" << std::endl;
             assert(0);
@@ -88,6 +91,12 @@ int main(int argc, char *argv[])
             
             if (has_intersect)
             {
+                Vec3f normal = tmp.getNormal();
+                if (normal.Dot3(ray.getDirection()) > 0) // at back side
+                {
+                    if (shade_back) normal.Negate();
+                    else continue; // here we keep it black if not shade back
+                }
                 Vec3f shade_color(0, 0, 0);
                 for (int k = 0; k < scene_parser.getNumLights(); ++k)
                 {
@@ -95,7 +104,7 @@ int main(int argc, char *argv[])
                     Vec3f dir2light;
                     Vec3f light_color;
                     light->getIllumination(tmp.getIntersectionPoint(), dir2light, light_color);
-                    float diffuse = dir2light.Dot3(tmp.getNormal());
+                    float diffuse = dir2light.Dot3(normal);
                     diffuse = std::max(diffuse, 0.0f);
                     shade_color += diffuse * (tmp.getMaterial()->getDiffuseColor() * light_color);
                 }
@@ -114,7 +123,7 @@ int main(int argc, char *argv[])
                 }
                 if (normal_file != NULL)
                 {
-                    Vec3f abs_normal = Vec3f(std::abs(tmp.getNormal().x()), std::abs(tmp.getNormal().y()), std::abs(tmp.getNormal().z()));
+                    Vec3f abs_normal = Vec3f(std::abs(normal.x()), std::abs(normal.y()), std::abs(normal.z()));
                     normal_img.SetPixel(i * width + DELTA, j * height + DELTA, abs_normal);
                 }
             }
