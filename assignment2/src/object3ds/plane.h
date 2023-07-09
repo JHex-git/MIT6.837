@@ -11,7 +11,7 @@ using utility::Vec3f;
 class Plane : public Object3D
 {
 public:
-    // normal point to the direction that away from origin
+    // P dot N = d
     Plane(const Vec3f &normal, float d, Material* material) : Object3D(material), m_normal(normal), m_offset(d)
     {
         m_normal.Normalize();
