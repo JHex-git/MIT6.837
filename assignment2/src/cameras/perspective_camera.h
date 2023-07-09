@@ -12,6 +12,7 @@ using raytrace::Ray;
 class PerspectiveCamera : public Camera
 {
 public:
+    // angle is in radian
     PerspectiveCamera(const Vec3f &center, const Vec3f &direction, const Vec3f &up, float angle);
 
     Ray generateRay(Vec2f point) override;
@@ -22,7 +23,7 @@ private:
     Vec3f m_direction;
     Vec3f m_up;
     Vec3f m_horizontal;
-    float m_angle;
+    float m_radian;
 };  
 } // namespace cameras
 
