@@ -110,7 +110,11 @@ int main(int argc, char *argv[])
                     depth = (depth_max - depth) / (depth_max - depth_min);
                     depth_img.SetPixel(i * width, j * height, Vec3f(depth, depth, depth));
                 }
-                if (normal_file != NULL) normal_img.SetPixel(i * width, j * height,tmp.getNormal());
+                if (normal_file != NULL)
+                {
+                    Vec3f abs_normal = Vec3f(std::abs(tmp.getNormal().x()), std::abs(tmp.getNormal().y()), std::abs(tmp.getNormal().z()));
+                    normal_img.SetPixel(i * width, j * height, abs_normal);
+                }
             }
         }
     }
