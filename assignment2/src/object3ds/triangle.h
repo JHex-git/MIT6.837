@@ -16,11 +16,6 @@ public:
     {
         Vec3f::Cross3(m_normal, b - a, c - a);
         m_normal.Normalize();
-        float edge_a = (c - b).Length();
-        float edge_b = (a - c).Length();
-        float edge_c = (b - a).Length();
-        float p = (edge_a + edge_b + edge_c) / 2;
-        m_area = sqrt(p * (p - edge_a) * (p - edge_b) * (p - edge_c));
     }
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
@@ -31,7 +26,6 @@ private:
     Vec3f m_point_a;
     Vec3f m_point_b;
     Vec3f m_point_c;
-    float m_area;
     Vec3f m_normal;
 };  
 } // namespace object3ds
