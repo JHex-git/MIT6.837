@@ -35,6 +35,8 @@ float depth_max = 1;
 char *depth_file = NULL;
 char *normal_file = NULL;
 
+constexpr float DELTA = 0.0001f;
+
 int main(int argc, char *argv[])
 {
     // sample command line:
@@ -99,7 +101,7 @@ int main(int argc, char *argv[])
                 }
                 // add ambient light
                 shade_color += tmp.getMaterial()->getDiffuseColor() * scene_parser.getAmbientLight();
-                result.SetPixel(i * width, j * height, shade_color);
+                result.SetPixel(i * width + DELTA, j * height + DELTA, shade_color);
 
                 if (depth_file != NULL) 
                 {
@@ -108,12 +110,12 @@ int main(int argc, char *argv[])
                     depth = std::min(depth, depth_max);
                     depth = std::max(depth, depth_min);
                     depth = (depth_max - depth) / (depth_max - depth_min);
-                    depth_img.SetPixel(i * width, j * height, Vec3f(depth, depth, depth));
+                    depth_img.SetPixel(i * width + DELTA, j * height + DELTA, Vec3f(depth, depth, depth));
                 }
                 if (normal_file != NULL)
                 {
                     Vec3f abs_normal = Vec3f(std::abs(tmp.getNormal().x()), std::abs(tmp.getNormal().y()), std::abs(tmp.getNormal().z()));
-                    normal_img.SetPixel(i * width, j * height, abs_normal);
+                    normal_img.SetPixel(i * width + DELTA, j * height + DELTA, abs_normal);
                 }
             }
         }
