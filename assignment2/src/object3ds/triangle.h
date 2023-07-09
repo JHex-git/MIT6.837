@@ -21,7 +21,6 @@ public:
         float edge_c = (b - a).Length();
         float p = (edge_a + edge_b + edge_c) / 2;
         m_area = sqrt(p * (p - edge_a) * (p - edge_b) * (p - edge_c));
-        std::cout << "area: " << m_area << std::endl;
     }
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
