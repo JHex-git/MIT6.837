@@ -95,7 +95,11 @@ int main(int argc, char *argv[])
                 if (normal.Dot3(ray.getDirection()) > 0) // at back side
                 {
                     if (shade_back) normal.Negate();
-                    else continue; // here we keep it black if not shade back
+                    else
+                    {
+                        result.SetPixel(i * width + DELTA, j * height + DELTA, Vec3f(0, 0, 0)); // keep back side black
+                        continue;
+                    }
                 }
                 Vec3f shade_color(0, 0, 0);
                 for (int k = 0; k < scene_parser.getNumLights(); ++k)
