@@ -12,12 +12,18 @@ using utility::Matrix;
 class Transform : public Object3D
 {
 public:
-    Transform(const Matrix &mat, Object3D* object) : m_mat(mat), m_object(object) { }
+    Transform(const Matrix &mat, Object3D* object) : m_matWS2OS(mat), m_object(object) 
+    {
+        m_matWS2OS.Inverse();
+        m_mat_normalWS2OS = m_matWS2OS;
+        m_mat_normalWS2OS.Transpose();
+    }
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
 
 private:
-    Matrix m_mat;
+    Matrix m_matWS2OS;
+    Matrix m_mat_normalWS2OS;
     Object3D* m_object;
 };  
 } // namespace object3ds
