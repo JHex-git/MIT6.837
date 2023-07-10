@@ -3,6 +3,7 @@ project(raytracer)
 
 SET(CMAKE_CXX_FLAGS_RELEASE "-O2")
 SET(CMAKE_CXX_STANDARD 17)
+set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
@@ -23,3 +24,15 @@ add_subdirectory(src/lights)
 add_subdirectory(src/materials)
 add_executable(raytracer src/main.cpp)
 target_link_libraries(raytracer cameras_lib object3ds_lib utility_lib mygl_lib lights_lib materials_lib ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+
+message(WARNING ${RUNTIME_OUTPUT_DIRECTORY})
+MACRO (COPY_GNU_DLL trgt libname)
+ADD_CUSTOM_COMMAND (
+    TARGET ${trgt}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+    ARGS -E copy_if_different "${GLUT_INCLUDE_DIR}/../bin/${libname}.dll" ${RUNTIME_OUTPUT_DIRECTORY}
+)
+ENDMACRO (COPY_GNU_DLL)
+
+COPY_GNU_DLL(raytracer libfreeglut)

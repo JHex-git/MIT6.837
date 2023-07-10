@@ -10,6 +10,7 @@
 #include "materials/material.h"
 #include "lights/light.h"
 #include "opengl/glCanvas.h"
+#include <GL/glut.h>
 
 // ========================================================
 // ========================================================
@@ -28,6 +29,8 @@ using materials::Material;
 using lights::Light;
 using opengl::GLCanvas;
 
+void Render();
+
 char *input_file = NULL;
 int width = 100;
 int height = 100;
@@ -37,12 +40,14 @@ float depth_max = 1;
 char *depth_file = NULL;
 char *normal_file = NULL;
 bool shade_back = false;
+bool gui = false;
 
 constexpr float DELTA = 0.0001f;
 SceneParser* scene_parser = nullptr;
 
 int main(int argc, char *argv[])
 {
+    glutInit(&argc, argv);
     // sample command line:
     // raytracer -input scene1_1.txt -size 200 200 -output output1_1.tga -depth 9 10 depth1_1.tga
     for (int i = 1; i < argc; i++) {
@@ -69,6 +74,8 @@ int main(int argc, char *argv[])
             normal_file = argv[i];
         } else if (!strcmp(argv[i],"-shade_back")) {
             shade_back = true;
+        } else if (!strcmp(argv[i],"-gui")) {
+            gui = true;
         } else {
             std::cerr << "whoops error with command line argument " << i << ": '" << argv[i] << "'" << std::endl;
             assert(0);
@@ -77,7 +84,8 @@ int main(int argc, char *argv[])
     
     GLCanvas canvas;
     scene_parser = new SceneParser(input_file);
-    canvas.initialize(scene_parser, Render);
+    if (gui) canvas.initialize(scene_parser, Render);
+    else Render();
 }
 
 void Render()
