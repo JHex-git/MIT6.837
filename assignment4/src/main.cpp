@@ -132,7 +132,7 @@ void Render()
         for (int j = 0; j < size; j++)
         {
             auto ray = scene_parser->getCamera()->generateRay(Vec2f((float)i / size, (float)j / size));
-            Vec3f shade_color = ray_tracer->traceRay(ray, scene_parser->getCamera()->getTMin(), 0, 1, 0, tmp);
+            Vec3f shade_color = ray_tracer->traceRay(ray, scene_parser->getCamera()->getTMin(), 0, 1, 1, tmp); // camera always placed in air, not in object, so index of refraction is 1
             if (tmp.getT() > scene_parser->getCamera()->getTMin()) // has intersect
             {
                 Vec3f normal = tmp.getNormal();
@@ -172,5 +172,5 @@ void Render()
 void TraceRay(float x, float y)
 {
     Hit hit;
-    ray_tracer->traceRay(scene_parser->getCamera()->generateRay(Vec2f(x, y)), scene_parser->getCamera()->getTMin(), 0, 1, 0, hit);
+    ray_tracer->traceRay(scene_parser->getCamera()->generateRay(Vec2f(x, y)), scene_parser->getCamera()->getTMin(), 0, 1, 1, hit); // camera always placed in air, not in object, so index of refraction is 1
 }

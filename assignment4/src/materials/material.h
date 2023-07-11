@@ -31,6 +31,7 @@ public:
   virtual Vec3f getSpecularColor() const = 0;
   virtual Vec3f getReflectiveColor() const = 0;
   virtual Vec3f getTransparentColor() const = 0;
+  virtual float getIndexOfRefraction() const = 0;
 
   virtual Vec3f Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLight, const Vec3f &lightColor) const = 0;
 

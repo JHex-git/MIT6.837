@@ -18,6 +18,7 @@ public:
     inline Vec3f getSpecularColor() const override { return m_specularColor; }
     inline Vec3f getReflectiveColor() const override { return m_reflectiveColor; }
     inline Vec3f getTransparentColor() const override { return m_transparentColor; }
+    inline float getIndexOfRefraction() const override { return m_indexOfRefraction; }
 
 private:
     float m_exponent;

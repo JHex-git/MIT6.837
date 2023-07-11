@@ -31,6 +31,8 @@ public:
 
 private:
     Vec3f mirrorDirection(const Vec3f &normal, const Vec3f &incoming) const;
+    bool transmittedDirection(const Vec3f &normal, const Vec3f &incoming, 
+                                float index_i, float index_t, Vec3f &transmitted) const;
 
     SceneParser *m_scene_parser;
     int m_max_bounces;

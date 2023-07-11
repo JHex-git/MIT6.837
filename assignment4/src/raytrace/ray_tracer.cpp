@@ -50,16 +50,58 @@ Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight,
         {
             Ray reflect_ray(ray.pointAtParameter(hit.getT() - epsilon), mirrorDirection(hit.getNormal(), ray.getDirection()));
             Hit reflect_hit;
-            color += reflective_color * traceRay(reflect_ray, tmin, bounces + 1, weight * reflective_color.Length(), indexOfRefraction, reflect_hit);
+            // color += reflective_color * traceRay(reflect_ray, tmin, bounces + 1, weight * reflective_color.Length(), indexOfRefraction, reflect_hit);
+            color += reflective_color * traceRay(reflect_ray, tmin, bounces + 1, weight * reflective_color.Length() / std::sqrt(3), indexOfRefraction, reflect_hit);
             RayTree::AddReflectedSegment(reflect_ray, tmin, reflect_hit.getT());
         }
+
+        Vec3f transparent_color = hit.getMaterial()->getTransparentColor();
+        if (transparent_color != Vec3f(0, 0, 0))
+        {
+            Vec3f transmitted_color(0, 0, 0);
+            Vec3f transmitted_direction;
+            bool has_transmitted;
+            if (hit.getNormal().Dot3(ray.getDirection()) < 0) // from outside to inside
+                has_transmitted = transmittedDirection(hit.getNormal(), ray.getDirection(), 1, hit.getMaterial()->getIndexOfRefraction(), transmitted_direction); // no nested transparent objects
+            else // from inside to outside
+                has_transmitted = transmittedDirection(hit.getNormal(), ray.getDirection(), hit.getMaterial()->getIndexOfRefraction(), 1, transmitted_direction); // no nested transparent objects
+            if (has_transmitted)
+            {
+                Ray transmitted_ray(ray.pointAtParameter(hit.getT() + epsilon), transmitted_direction);
+                Hit transmitted_hit;
+                // transmitted_color = traceRay(transmitted_ray, tmin, bounces + 1, weight * transparent_color.Length(), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
+                transmitted_color = traceRay(transmitted_ray, tmin, bounces + 1, weight * transparent_color.Length() / std::sqrt(3), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
+                RayTree::AddTransmittedSegment(transmitted_ray, tmin, transmitted_hit.getT());
+                color += transmitted_color * transparent_color;
+            }
+        }
+    }
+    else
+    {
+        color = m_scene_parser->getBackgroundColor();
     }
 
-    return color * weight;
+    return color;
+    // return color * weight;
 }
 
 Vec3f RayTracer::mirrorDirection(const Vec3f &normal, const Vec3f &incoming) const
 {
     return incoming - 2 * normal.Dot3(incoming) * normal;
+}
+
+bool RayTracer::transmittedDirection(const Vec3f &normal, const Vec3f &incoming, float index_i, float index_t, Vec3f &transmitted) const
+{
+    float index_r = index_i / index_t;
+    Vec3f i = incoming;
+    Vec3f n = normal;
+    i.Negate();
+    if (i.Dot3(n) < 0) n.Negate();
+    float discriminant = 1 - index_r * index_r * (1 - n.Dot3(i) * n.Dot3(i));
+    if (discriminant < 0) return false; // Total internal reflection
+
+    transmitted = (index_r * n.Dot3(i) - std::sqrt(1 - index_r * index_r * (1 - n.Dot3(i) * n.Dot3(i)))) * n - index_r * i;
+    transmitted.Normalize();
+    return true;
 }
 } // namespace raytrace
