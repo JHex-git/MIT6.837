@@ -112,20 +112,7 @@ int main(int argc, char *argv[])
     if (gui) canvas.initialize(scene_parser, Render, TraceRay);
     else
     {
-        int size = std::min(width, height);
-        Image result(width, height);
-        result.SetAllPixels(scene_parser->getBackgroundColor());
-        Hit hit;
-        for (int i = 0; i < size; ++i)
-        {
-            for (int j = 0; j < size; ++j)
-            {
-                Vec3f shade = ray_tracer->traceRay(scene_parser->getCamera()->generateRay(Vec2f((float)i / size, (float)j / size)), scene_parser->getCamera()->getTMin(), 0, 1, 0, hit);
-                if (hit.getT() > scene_parser->getCamera()->getTMin())
-                    result.SetPixel(i, j, shade);
-            }
-        }
-        result.SaveTGA(output_file);
+        Render();
     }
 }
 
@@ -145,9 +132,8 @@ void Render()
         for (int j = 0; j < size; j++)
         {
             auto ray = scene_parser->getCamera()->generateRay(Vec2f((float)i / size, (float)j / size));
-            bool has_intersect = group->intersect(ray, tmp, scene_parser->getCamera()->getTMin());
-            
-            if (has_intersect)
+            Vec3f shade_color = ray_tracer->traceRay(ray, scene_parser->getCamera()->getTMin(), 0, 1, 0, tmp);
+            if (tmp.getT() > scene_parser->getCamera()->getTMin()) // has intersect
             {
                 Vec3f normal = tmp.getNormal();
                 if (normal.Dot3(ray.getDirection()) > 0) // at back side
@@ -159,18 +145,6 @@ void Render()
                         continue;
                     }
                 }
-                Vec3f shade_color(0, 0, 0);
-                for (int k = 0; k < scene_parser->getNumLights(); ++k)
-                {
-                    Light* light = scene_parser->getLight(k);
-                    Vec3f dir2light;
-                    Vec3f light_color;
-                    float distance2light;
-                    light->getIllumination(tmp.getIntersectionPoint(), dir2light, light_color, distance2light);
-                    shade_color += tmp.getMaterial()->Shade(ray, tmp, dir2light, light_color);
-                }
-                // add ambient light
-                shade_color += tmp.getMaterial()->getDiffuseColor() * scene_parser->getAmbientLight();
                 result.SetPixel(i, j, shade_color);
 
                 if (depth_file != NULL) 
