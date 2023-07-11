@@ -67,12 +67,6 @@ void OrthographicCamera::glPlaceCamera(void)
 void OrthographicCamera::dollyCamera(float dist)
 {
     m_center += m_direction * dist;
-
-    // ===========================================
-    // ASSIGNMENT 3: Fix any other affected values
-    // ===========================================
-
-
 }
 
 // ====================================================================
@@ -81,20 +75,7 @@ void OrthographicCamera::dollyCamera(float dist)
 
 void OrthographicCamera::truckCamera(float dx, float dy)
 {
-    Vec3f horizontal;
-    Vec3f::Cross3(horizontal, m_direction, m_up);
-    horizontal.Normalize();
-
-    Vec3f screenUp;
-    Vec3f::Cross3(screenUp, horizontal, m_direction);
-
-    m_center += horizontal*dx + screenUp*dy;
-
-    // ===========================================
-    // ASSIGNMENT 3: Fix any other affected values
-    // ===========================================
-
-
+    m_center += m_horizontal * dx + m_up * dy;
 }
 
 // ====================================================================
@@ -120,6 +101,11 @@ void OrthographicCamera::rotateCamera(float rx, float ry)
 
     rotMat.Transform(m_center);
     rotMat.TransformDirection(m_direction);
+    m_direction.Normalize();
+    rotMat.TransformDirection(m_horizontal);
+    m_horizontal.Normalize();
+    rotMat.TransformDirection(m_up);
+    m_up.Normalize();
 
     // ===========================================
     // ASSIGNMENT 3: Fix any other affected values

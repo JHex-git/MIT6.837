@@ -59,12 +59,6 @@ void PerspectiveCamera::glPlaceCamera(void)
 void PerspectiveCamera::dollyCamera(float dist)
 {
   m_center += m_direction * dist;
-
-  // ===========================================
-  // ASSIGNMENT 3: Fix any other affected values
-  // ===========================================
-
-
 }
 
 // ====================================================================
@@ -73,20 +67,7 @@ void PerspectiveCamera::dollyCamera(float dist)
 
 void PerspectiveCamera::truckCamera(float dx, float dy)
 {
-  Vec3f horizontal;
-  Vec3f::Cross3(horizontal, m_direction, m_up);
-  horizontal.Normalize();
-
-  Vec3f screenUp;
-  Vec3f::Cross3(screenUp, horizontal, m_direction);
-
-  m_center += horizontal*dx + screenUp*dy;
-
-  // ===========================================
-  // ASSIGNMENT 3: Fix any other affected values
-  // ===========================================
-
-
+  m_center += m_horizontal * dx + m_up * dy;
 }
 
 // ====================================================================
@@ -95,10 +76,6 @@ void PerspectiveCamera::truckCamera(float dx, float dy)
 
 void PerspectiveCamera::rotateCamera(float rx, float ry)
 {
-  Vec3f horizontal;
-  Vec3f::Cross3(horizontal, m_direction, m_up);
-  horizontal.Normalize();
-
   // Don't let the model flip upside-down (There is a singularity
   // at the poles when 'up' and 'direction' are aligned)
   float tiltAngle = acos(m_up.Dot3(m_direction));
@@ -108,16 +85,14 @@ void PerspectiveCamera::rotateCamera(float rx, float ry)
     ry = tiltAngle - 0.01;
 
   Matrix rotMat = Matrix::MakeAxisRotation(m_up, rx);
-  rotMat *= Matrix::MakeAxisRotation(horizontal, ry);
+  rotMat *= Matrix::MakeAxisRotation(m_horizontal, ry);
 
   rotMat.Transform(m_center);
   rotMat.TransformDirection(m_direction);
   m_direction.Normalize();
-
-  // ===========================================
-  // ASSIGNMENT 3: Fix any other affected values
-  // ===========================================
-
-
+  rotMat.TransformDirection(m_horizontal);
+  m_horizontal.Normalize();
+  rotMat.TransformDirection(m_up);
+  m_up.Normalize();
 }
 } // namespace cameras
