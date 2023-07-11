@@ -12,7 +12,11 @@
 #ifdef SPECULAR_FIX
 // OPTIONAL:  global variable allows (hacky) communication 
 // with glCanvas::display
-extern int SPECULAR_FIX_WHICH_PASS;
+namespace opengl
+{
+  extern int SPECULAR_FIX_WHICH_PASS;
+} // namespace opengl
+
 #endif
 
 // ====================================================================
@@ -22,6 +26,12 @@ extern int SPECULAR_FIX_WHICH_PASS;
 
 namespace materials
 {
+#ifdef SPECULAR_FIX
+// OPTIONAL:  global variable allows (hacky) communication 
+// with glCanvas::display
+using opengl::SPECULAR_FIX_WHICH_PASS;
+#endif
+
 Vec3f PhongMaterial::Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLight, const Vec3f &lightColor) const
 {
     Vec3f h = ray.getDirection();

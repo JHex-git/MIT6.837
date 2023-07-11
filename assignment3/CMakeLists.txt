@@ -25,7 +25,6 @@ add_subdirectory(src/materials)
 add_executable(raytracer src/main.cpp)
 target_link_libraries(raytracer cameras_lib object3ds_lib utility_lib mygl_lib lights_lib materials_lib ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
 
-message(WARNING ${RUNTIME_OUTPUT_DIRECTORY})
 MACRO (COPY_GNU_DLL trgt libname)
 ADD_CUSTOM_COMMAND (
     TARGET ${trgt}
