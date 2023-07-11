@@ -38,8 +38,18 @@ Vec3f PhongMaterial::Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLig
     h.Negate();
     h += dirToLight;
     h.Normalize();
-// TODO: To solve this problem, the specular component can be multiplied by the dot product of the normal and direction to the light instead of simply clamping it to zero when this dot product is negative. You may implement either method in your ray tracer.
-    return (hit.getNormal().Dot3(dirToLight) * m_diffuseColor + std::pow(hit.getNormal().Dot3(h), m_exponent) * m_specularColor) * lightColor;
+    
+    float specular_component = std::pow(hit.getNormal().Dot3(h), m_exponent);
+#if SPECULAR_FIX
+    specular_component *= std::max(0.0f, hit.getNormal().Dot3(dirToLight));
+#else
+    if (hit.getNormal().Dot3(dirToLight) < 0)
+    {
+      specular_component = 0;
+    }
+#endif
+
+    return (std::max(0.0f, hit.getNormal().Dot3(dirToLight)) * m_diffuseColor + specular_component * m_specularColor) * lightColor;
 }
 
 void PhongMaterial::glSetMaterial(void) const {

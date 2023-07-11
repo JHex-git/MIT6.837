@@ -47,7 +47,6 @@ void Sphere::paint(void)
             Vec3f p3 = getCoordinate(iPhi + phi_step, iTheta + theta_step);
             Vec3f p4 = getCoordinate(iPhi + phi_step, iTheta);
             Vec3f normal;
-            // TODO: gouraud shading
             if (!gouraud) 
             {
                 Vec3f::Cross3(normal, p2 - p1, p4 - p1);

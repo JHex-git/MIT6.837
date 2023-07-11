@@ -6,7 +6,6 @@ namespace object3ds
 using utility::Vec3f;
 bool Transform::intersect(const Ray &r, Hit &h, float tmin)
 {
-    // TODO:
     Vec3f dir = r.getDirection();
     Vec3f orig = r.getOrigin();
 
