@@ -6,6 +6,8 @@
 // include glCanvas.h to access the preprocessor variable SPECULAR_FIX
 #include "opengl/glCanvas.h"  
 #include "materials/phong_material.h"
+#include "raytrace/ray.h"
+#include "raytrace/hit.h"
 
 #ifdef SPECULAR_FIX
 // OPTIONAL:  global variable allows (hacky) communication 
@@ -22,8 +24,12 @@ namespace materials
 {
 Vec3f PhongMaterial::Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLight, const Vec3f &lightColor) const
 {
-    assert(false);
-    return Vec3f();
+    Vec3f h = ray.getDirection();
+    h.Negate();
+    h += dirToLight;
+    h.Normalize();
+// TODO: To solve this problem, the specular component can be multiplied by the dot product of the normal and direction to the light instead of simply clamping it to zero when this dot product is negative. You may implement either method in your ray tracer.
+    return (hit.getNormal().Dot3(dirToLight) * m_diffuseColor + std::pow(hit.getNormal().Dot3(h), m_exponent) * m_specularColor) * lightColor;
 }
 
 void PhongMaterial::glSetMaterial(void) const {

@@ -23,11 +23,11 @@ class Material {
 public:
 
   // CONSTRUCTORS & DESTRUCTOR
-  Material(const Vec3f &d_color) { diffuseColor = d_color; }
+  Material(const Vec3f &d_color) { m_diffuseColor = d_color; }
   virtual ~Material() {}
 
   // ACCESSORS
-  virtual Vec3f getDiffuseColor() const { return diffuseColor; }
+  virtual Vec3f getDiffuseColor() const { return m_diffuseColor; }
 
   virtual Vec3f Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLight, const Vec3f &lightColor) const = 0;
 
@@ -36,7 +36,7 @@ public:
 protected:
 
   // REPRESENTATION
-  Vec3f diffuseColor;
+  Vec3f m_diffuseColor;
 };
   
 } // namespace materials

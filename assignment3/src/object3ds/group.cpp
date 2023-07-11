@@ -24,6 +24,9 @@ bool Group::intersect(const Ray &r, Hit &h, float tmin)
 
 void Group::paint(void)
 {
-    assert(false);
+    for (auto obj: m_objects)
+    {
+        obj->paint();
+    }
 }
 } // namespace object3ds

@@ -1,5 +1,6 @@
 #include "object3ds/triangle.h"
 #include "utility/matrix.h"
+#include <GL/gl.h>
 
 namespace object3ds
 {
@@ -54,7 +55,13 @@ float Triangle::determinant(const float mat[9]) const
 
 void Triangle::paint(void)
 {
-    assert(false);
+    m_material->glSetMaterial();
+    glBegin(GL_TRIANGLES);
+    glNormal3f(m_normal.x(), m_normal.y(), m_normal.z());
+    glVertex3f(m_point_a.x(), m_point_a.y(), m_point_a.z());
+    glVertex3f(m_point_b.x(), m_point_b.y(), m_point_b.z());
+    glVertex3f(m_point_c.x(), m_point_c.y(), m_point_c.z());
+    glEnd();
 }
 
 } // namespace object3ds

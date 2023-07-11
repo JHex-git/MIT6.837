@@ -6,6 +6,7 @@
 #include "utility/vectors.h"
 #include "utility/image.h"
 #include "object3ds/group.h"
+#include "object3ds/sphere.h"
 #include "raytrace/hit.h"
 #include "materials/material.h"
 #include "lights/light.h"
@@ -18,6 +19,7 @@
 // ========================================================
 using object3ds::SceneParser;
 using object3ds::Group;
+using object3ds::Sphere;
 using cameras::Camera;
 using cameras::OrthographicCamera;
 using utility::Vec2f;
@@ -76,6 +78,13 @@ int main(int argc, char *argv[])
             shade_back = true;
         } else if (!strcmp(argv[i],"-gui")) {
             gui = true;
+        } else if (!strcmp(argv[i],"-tessellation")) {
+            i++; assert (i < argc); 
+            Sphere::theta_steps = atoi(argv[i]);
+            i++; assert (i < argc); 
+            Sphere::phi_steps = atoi(argv[i]);
+        } else if (!strcmp(argv[i],"-gouraud")) {
+            Sphere::gouraud = true;
         } else {
             std::cerr << "whoops error with command line argument " << i << ": '" << argv[i] << "'" << std::endl;
             assert(0);
@@ -126,9 +135,11 @@ void Render()
                     Vec3f light_color;
                     float distance2light;
                     light->getIllumination(tmp.getIntersectionPoint(), dir2light, light_color, distance2light);
-                    float diffuse = dir2light.Dot3(normal);
-                    diffuse = std::max(diffuse, 0.0f);
-                    shade_color += diffuse * (tmp.getMaterial()->getDiffuseColor() * light_color);
+                    // TODO: shade
+                    shade_color += tmp.getMaterial()->Shade(ray, tmp, dir2light, light_color);
+                    // float diffuse = dir2light.Dot3(normal);
+                    // diffuse = std::max(diffuse, 0.0f);
+                    // shade_color += diffuse * (tmp.getMaterial()->getDiffuseColor() * light_color);
                 }
                 // add ambient light
                 shade_color += tmp.getMaterial()->getDiffuseColor() * scene_parser->getAmbientLight();

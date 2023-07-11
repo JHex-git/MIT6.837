@@ -1,4 +1,5 @@
 #include "object3ds/transform.h"
+#include <GL/gl.h>
 
 namespace object3ds
 {
@@ -30,6 +31,13 @@ bool Transform::intersect(const Ray &r, Hit &h, float tmin)
 
 void Transform::paint(void)
 {
-    assert(false);
+    glPushMatrix();
+    Matrix mat = m_matWS2OS;
+    mat.Inverse();
+    GLfloat *glMatrix = mat.glGet();
+    glMultMatrixf(glMatrix);
+    delete[] glMatrix;
+    m_object->paint();
+    glPopMatrix();
 }
 } // namespace object3ds
