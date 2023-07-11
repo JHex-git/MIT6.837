@@ -14,6 +14,10 @@ public:
 
     void glSetMaterial(void) const override;
     Vec3f Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLight, const Vec3f &lightColor) const override;
+    
+    inline Vec3f getSpecularColor() const override { return m_specularColor; }
+    inline Vec3f getReflectiveColor() const override { return m_reflectiveColor; }
+    inline Vec3f getTransparentColor() const override { return m_transparentColor; }
 
 private:
     float m_exponent;

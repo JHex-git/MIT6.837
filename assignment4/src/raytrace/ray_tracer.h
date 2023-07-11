@@ -30,6 +30,8 @@ public:
                     float indexOfRefraction, Hit &hit) const;
 
 private:
+    Vec3f mirrorDirection(const Vec3f &normal, const Vec3f &incoming) const;
+
     SceneParser *m_scene_parser;
     int m_max_bounces;
     float m_cutoff_weight;
