@@ -107,13 +107,6 @@ void GLCanvas::display(void)
   glLoadIdentity();
   scene->getCamera()->glPlaceCamera();
 
-
-  // ========================================================
-  // DRAW AXES
-  // remove this line once you've started rendering primitive objects
-  drawAxes(); 
-  // ========================================================
-
   glEnable(GL_LIGHTING);
   glEnable(GL_DEPTH_TEST);
 
