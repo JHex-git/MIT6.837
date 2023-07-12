@@ -37,9 +37,12 @@ Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight,
             {
                 Ray shadowRay(ray.pointAtParameter(hit.getT()), dirToLight);
                 Hit shadowHit;
-                bool has_shadow = m_scene_parser->getGroup()->intersect(shadowRay, shadowHit, epsilon);
-                RayTree::AddShadowSegment(shadowRay, 0, has_shadow ? shadowHit.getT() : distanceToLight);
-                if (!has_shadow) color += hit.getMaterial()->Shade(ray, hit, dirToLight, lightColor);
+                bool shadow_intersect = m_scene_parser->getGroup()->intersect(shadowRay, shadowHit, epsilon);
+                // shadow ray may hit light or other objects first, if it hits other objects first, then it is in shadow, otherwise it is not in shadow
+                float distance2light_obj = distanceToLight;
+                if (shadow_intersect) distance2light_obj = std::min(shadowHit.getT(), distanceToLight);
+                RayTree::AddShadowSegment(shadowRay, 0, distance2light_obj);
+                if (distance2light_obj == distanceToLight) color += hit.getMaterial()->Shade(ray, hit, dirToLight, lightColor); // hit light first, so no shadow
             }
             else
                 color += hit.getMaterial()->Shade(ray, hit, dirToLight, lightColor);
