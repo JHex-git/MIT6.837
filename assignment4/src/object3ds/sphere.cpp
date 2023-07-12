@@ -25,6 +25,7 @@ bool Sphere::intersect(const Ray &r, Hit &h, float tmin)
 
     float t_prime = std::sqrt(radius_square - distance_square);
     float t = is_inside ? t_p + t_prime : t_p - t_prime;
+    if (t == t_p - t_prime && t < tmin) t = t_p + t_prime; // origin out of sphere but tmin is inside
     if (t < tmin) return false;
     Vec3f normal = ray_origin + t * r.getDirection() - m_center;
     normal.Normalize();
