@@ -39,17 +39,19 @@ Vec3f PhongMaterial::Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLig
     h += dirToLight;
     h.Normalize();
     
-    float specular_component = std::pow(hit.getNormal().Dot3(h), m_exponent);
+    Vec3f normal = hit.getNormal();
+    if (ray.getDirection().Dot3(normal) > 0) normal.Negate(); // self-occlusion when inside object
+    float specular_component = std::pow(normal.Dot3(h), m_exponent);
 #if SPECULAR_FIX
-    specular_component *= std::max(0.0f, hit.getNormal().Dot3(dirToLight));
+    specular_component *= std::max(0.0f, normal.Dot3(dirToLight));
 #else
-    if (hit.getNormal().Dot3(dirToLight) < 0)
+    if (normal.Dot3(dirToLight) < 0)
     {
       specular_component = 0;
     }
 #endif
 
-    return (std::max(0.0f, hit.getNormal().Dot3(dirToLight)) * m_diffuseColor + specular_component * m_specularColor) * lightColor;
+    return (std::max(0.0f, normal.Dot3(dirToLight)) * m_diffuseColor + specular_component * m_specularColor) * lightColor;
 }
 
 void PhongMaterial::glSetMaterial(void) const {

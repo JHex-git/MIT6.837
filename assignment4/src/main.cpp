@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
     
     GLCanvas canvas;
     scene_parser = new SceneParser(input_file);
-    ray_tracer = new RayTracer(scene_parser, bounces, weight, shadows);
+    ray_tracer = new RayTracer(scene_parser, bounces, weight, shadows, shade_back);
     if (gui) canvas.initialize(scene_parser, Render, TraceRay);
     else
     {
@@ -136,15 +136,6 @@ void Render()
             if (tmp.getT() > scene_parser->getCamera()->getTMin()) // has intersect
             {
                 Vec3f normal = tmp.getNormal();
-                if (normal.Dot3(ray.getDirection()) > 0) // at back side
-                {
-                    if (shade_back) normal.Negate();
-                    else
-                    {
-                        result.SetPixel(i, j, Vec3f(0, 0, 0)); // keep back side black
-                        continue;
-                    }
-                }
                 result.SetPixel(i, j, shade_color);
 
                 if (depth_file != NULL) 

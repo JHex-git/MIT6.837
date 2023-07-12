@@ -23,8 +23,8 @@ using utility::Vec3f;
 class RayTracer
 {
 public:
-    RayTracer(SceneParser *s, int max_bounces, float cutoff_weight, bool shadows)
-        : m_scene_parser(s), m_max_bounces(max_bounces), m_cutoff_weight(cutoff_weight), m_shadows(shadows) {}
+    RayTracer(SceneParser *s, int max_bounces, float cutoff_weight, bool shadows, bool shade_back)
+        : m_scene_parser(s), m_max_bounces(max_bounces), m_cutoff_weight(cutoff_weight), m_shadows(shadows), m_shade_back(shade_back) {}
 
     Vec3f traceRay(const Ray &ray, float tmin, int bounces, float weight, 
                     float indexOfRefraction, Hit &hit) const;
@@ -38,6 +38,7 @@ private:
     int m_max_bounces;
     float m_cutoff_weight;
     bool m_shadows;
+    bool m_shade_back;
 };
 } // namespace raytrace
 
