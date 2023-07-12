@@ -11,6 +11,7 @@ Segment RayTree::main_segment;
 SegmentVector RayTree::shadow_segments;
 SegmentVector RayTree::reflected_segments;
 SegmentVector RayTree::transmitted_segments;
+SegmentVector RayTree::normal_segments;
 
 // ====================================================================
 
@@ -23,9 +24,11 @@ void RayTree::Print() {
     reflected_segments.getSegment(i).Print("reflected  "); }
   for (int i = 0; i < transmitted_segments.getNumSegments(); i++) {
     transmitted_segments.getSegment(i).Print("transmitted"); }
+  for (int i = 0; i < normal_segments.getNumSegments(); i++) {
+    normal_segments.getSegment(i).Print("normal     "); }
 }
 
-void RayTree::paintHelper(const Vec4f &m,const Vec4f &s,const Vec4f &r,const Vec4f &t) {
+void RayTree::paintHelper(const Vec4f &m,const Vec4f &s,const Vec4f &r,const Vec4f &t, const Vec4f &n) {
   glBegin(GL_LINES);
   glColor4f(m.r(),m.g(),m.b(),m.a());
   main_segment.paint();
@@ -39,6 +42,9 @@ void RayTree::paintHelper(const Vec4f &m,const Vec4f &s,const Vec4f &r,const Vec
   glColor4f(t.r(),t.g(),t.b(),t.a());
   for (int i = 0; i < transmitted_segments.getNumSegments(); i++) {
     transmitted_segments.getSegment(i).paint(); }  
+  glColor4f(n.r(),n.g(),n.b(),n.a());
+  for (int i = 0; i < normal_segments.getNumSegments(); i++) {
+    normal_segments.getSegment(i).paint(); }
   glEnd();
 }
 
@@ -57,7 +63,8 @@ void RayTree::paint() {
   paintHelper(Vec4f(0.5,0.5,0.5,0.4),
 	      Vec4f(0.1,0.9,0.1,0.4),
 	      Vec4f(0.9,0.1,0.1,0.4),
-	      Vec4f(0.1,0.1,0.9,0.4));
+	      Vec4f(0.1,0.1,0.9,0.4),
+        Vec4f(0.957, 0.957, 0.262, 0.4));
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
@@ -65,7 +72,8 @@ void RayTree::paint() {
   paintHelper(Vec4f(0.5,0.5,0.5,1.0),
 	      Vec4f(0.1,0.9,0.1,1.0),
 	      Vec4f(0.9,0.1,0.1,1.0),
-	      Vec4f(0.1,0.1,0.9,1.0));
+	      Vec4f(0.1,0.1,0.9,1.0),
+        Vec4f(0.957, 0.957, 0.262, 1.0));
 	      
   glEnable(GL_LIGHTING);
 }

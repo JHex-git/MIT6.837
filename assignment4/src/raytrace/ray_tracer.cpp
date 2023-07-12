@@ -46,16 +46,16 @@ Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight,
         }
 
         Vec3f normal = hit.getNormal();
-        if (normal.Dot3(ray.getDirection()) > 0) normal.Negate();
         Ray normal_ray(ray.pointAtParameter(hit.getT()), normal);
+        RayTree::AddNormalSegment(normal_ray);
         
         Vec3f reflective_color = hit.getMaterial()->getReflectiveColor();
         if (reflective_color != Vec3f(0, 0, 0))
         {
-            Ray reflect_ray(ray.pointAtParameter(hit.getT() - epsilon), mirrorDirection(normal, ray.getDirection()));
+            Ray reflect_ray(ray.pointAtParameter(hit.getT()), mirrorDirection(normal, ray.getDirection()));
             Hit reflect_hit;
             // color += reflective_color * traceRay(reflect_ray, tmin, bounces + 1, weight * reflective_color.Length(), indexOfRefraction, reflect_hit);
-            color += reflective_color * traceRay(reflect_ray, 0, bounces + 1, weight * reflective_color.Length() / std::sqrt(3), indexOfRefraction, reflect_hit);
+            color += reflective_color * traceRay(reflect_ray, epsilon, bounces + 1, weight * reflective_color.Length() / std::sqrt(3), indexOfRefraction, reflect_hit);
             if (reflect_hit.getT() != 0)
             {
                 RayTree::AddReflectedSegment(reflect_ray, 0, reflect_hit.getT());
@@ -74,10 +74,10 @@ Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight,
                 has_transmitted = transmittedDirection(normal, ray.getDirection(), hit.getMaterial()->getIndexOfRefraction(), 1, transmitted_direction); // no nested transparent objects
             if (has_transmitted)
             {
-                Ray transmitted_ray(ray.pointAtParameter(hit.getT() + epsilon), transmitted_direction);
+                Ray transmitted_ray(ray.pointAtParameter(hit.getT()), transmitted_direction);
                 Hit transmitted_hit;
                 // transmitted_color = traceRay(transmitted_ray, tmin, bounces + 1, weight * transparent_color.Length(), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
-                transmitted_color = traceRay(transmitted_ray, 0, bounces + 1, weight * transparent_color.Length() / std::sqrt(3), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
+                transmitted_color = traceRay(transmitted_ray, epsilon, bounces + 1, weight * transparent_color.Length() / std::sqrt(3), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
                 if (transmitted_hit.getT() != 0)
                 {
                     RayTree::AddTransmittedSegment(transmitted_ray, 0, transmitted_hit.getT());

@@ -124,6 +124,10 @@ public:
     if (!activated) return;
     transmitted_segments.addSegment(Segment(ray,tstart,tstop));
   }
+  static void AddNormalSegment(const Ray &ray) {
+    if (!activated) return;
+    normal_segments.addSegment(Segment(ray, 0, 1));
+  }
 
   static void paint();
   static void Print();
@@ -131,12 +135,13 @@ public:
 private:
   
   // HELPER FUNCTIONS
-  static void paintHelper(const Vec4f &m,const Vec4f &s,const Vec4f &r,const Vec4f &t);
+  static void paintHelper(const Vec4f &m,const Vec4f &s,const Vec4f &r,const Vec4f &t,const Vec4f &n);
   static void Clear() {
     main_segment.Clear();
     shadow_segments.Clear();
     reflected_segments.Clear();
     transmitted_segments.Clear();
+    normal_segments.Clear();
   }
 
   // REPRESENTATION
@@ -145,6 +150,7 @@ private:
   static SegmentVector shadow_segments;
   static SegmentVector reflected_segments;
   static SegmentVector transmitted_segments;
+  static SegmentVector normal_segments;
 };
 } // namespace raytrace
 
