@@ -67,7 +67,7 @@ bool Transform::intersect(const Ray &r, Hit &h, float tmin)
     return false;
 }
 
-void Transform::paint(void)
+void Transform::paint(void) const
 {
     glPushMatrix();
     Matrix mat = m_matWS2OS;

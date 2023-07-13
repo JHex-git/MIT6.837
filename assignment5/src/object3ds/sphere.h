@@ -14,7 +14,7 @@ public:
     Sphere(const Vec3f &center, float radius, Material* material);
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
-    void paint(void) override;
+    void paint(void) const override;
     void insertIntoGrid(Grid *g, Matrix *m) override;
 
 

@@ -41,7 +41,7 @@ bool Sphere::intersect(const Ray &r, Hit &h, float tmin)
     return true;
 }   
 
-void Sphere::paint(void)
+void Sphere::paint(void) const
 {
     m_material->glSetMaterial();
     glBegin(GL_QUADS);

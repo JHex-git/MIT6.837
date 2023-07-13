@@ -21,7 +21,7 @@ public:
   // CONSTRUCTOR & DESTRUCTOR
   BoundingBox(Vec3f _min, Vec3f _max) {
     Set(_min,_max); }
-  ~BoundingBox() {}
+  ~BoundingBox() { }
 
   // ACCESSORS
   void Get(Vec3f &_min, Vec3f &_max) const {

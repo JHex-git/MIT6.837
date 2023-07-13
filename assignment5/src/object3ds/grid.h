@@ -18,7 +18,7 @@ public:
     Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz); 
     
     bool intersect(const Ray &r, Hit &h, float tmin) override;
-    void paint(void) override;
+    void paint(void) const override;
 
     inline bool getVoxel(int x, int y, int z) const { return m_voxels[x][y][z]; }
     inline void setVoxel(int x, int y, int z, bool opaque) { m_voxels[x][y][z] = opaque; }
@@ -29,7 +29,6 @@ private:
     int m_nx, m_ny, m_nz;
     float m_dx, m_dy, m_dz;
     std::vector<std::vector<std::vector<bool>>> m_voxels; // true if occupied
-    std::shared_ptr<BoundingBox> m_bounding_box;
 };
 } // namespace object3ds
 

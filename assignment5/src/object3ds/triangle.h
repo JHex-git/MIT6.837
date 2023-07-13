@@ -14,7 +14,7 @@ public:
     Triangle(const Vec3f &a, const Vec3f &b, const Vec3f &c, Material* material);
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
-    void paint(void) override;
+    void paint(void) const override;
 
 private:
     float determinant(const float mat[9]) const;

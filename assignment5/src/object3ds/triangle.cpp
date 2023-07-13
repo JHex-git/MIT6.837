@@ -64,7 +64,7 @@ float Triangle::determinant(const float mat[9]) const
     return mat[0] * mat[4] * mat[8] + mat[1] * mat[5] * mat[6] + mat[2] * mat[3] * mat[7] - mat[2] * mat[4] * mat[6] - mat[1] * mat[3] * mat[8] - mat[0] * mat[5] * mat[7];
 }
 
-void Triangle::paint(void)
+void Triangle::paint(void) const
 {
     m_material->glSetMaterial();
     glBegin(GL_TRIANGLES);

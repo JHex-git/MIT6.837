@@ -15,7 +15,7 @@ public:
     Transform(const Matrix &mat, Object3D* object);
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
-    void paint(void) override;
+    void paint(void) const override;
 
 private:
     Matrix m_matWS2OS;

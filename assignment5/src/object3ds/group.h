@@ -15,13 +15,10 @@ class Group : public Object3D
 public:
     Group(int num_objects);
 
-    inline void addObject(int index, Object3D* obj)
-    {
-        m_objects[index] = std::shared_ptr<Object3D>(obj);
-    }
+    void addObject(int index, Object3D* obj);
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
-    void paint(void) override;
+    void paint(void) const override;
     void insertIntoGrid(Grid *g, Matrix *m) override;
 
 private:

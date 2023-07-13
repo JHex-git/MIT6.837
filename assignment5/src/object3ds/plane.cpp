@@ -15,7 +15,7 @@ bool Plane::intersect(const Ray &r, Hit &h, float tmin)
     return true;
 }
 
-void Plane::paint(void)
+void Plane::paint(void) const
 {
     m_material->glSetMaterial();
     float t = m_offset / m_normal.Dot3(m_normal);

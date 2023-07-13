@@ -21,7 +21,7 @@ public:
     Object3D(Material* material) : m_material(material) {}
 
     virtual bool intersect(const Ray &r, Hit &h, float tmin) = 0;
-    virtual void paint(void) = 0;
+    virtual void paint(void) const = 0;
     virtual void insertIntoGrid(Grid *g, Matrix *m) {}
 
     std::shared_ptr<BoundingBox> getBoundingBox() const { return m_bounding_box; }
