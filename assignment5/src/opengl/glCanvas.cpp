@@ -25,10 +25,10 @@ void (*GLCanvas::renderFunction)(void);
 void (*GLCanvas::traceRayFunction)(float,float);
 
 // A pointer to the global SceneParser
-SceneParser *GLCanvas::scene;
+std::shared_ptr<SceneParser> GLCanvas::scene;
 
 // A pointer to the grid
-Grid *GLCanvas::grid;
+std::shared_ptr<Grid> GLCanvas::grid;
 bool GLCanvas::visualize_grid = 0;
 int GLCanvas::visualize_grid_march = 0;
 
@@ -290,10 +290,10 @@ void GLCanvas::keyboard(unsigned char key, int i, int j) {
 // by calling 'exit(0)'
 // ========================================================
 
-void GLCanvas::initialize(SceneParser *_scene, 
+void GLCanvas::initialize(std::shared_ptr<SceneParser> _scene, 
 			  void (*_renderFunction)(void), 
 			  void (*_traceRayFunction)(float,float), 
-			  Grid *_grid, bool _visualize_grid) {
+			  std::shared_ptr<Grid> _grid, bool _visualize_grid) {
   scene = _scene;
   grid = _grid;
   visualize_grid = _visualize_grid;

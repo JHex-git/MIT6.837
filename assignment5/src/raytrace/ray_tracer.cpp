@@ -124,21 +124,5 @@ bool RayTracer::transmittedDirection(const Vec3f &normal, const Vec3f &incoming,
     transmitted = (index_r * n.Dot3(i) - std::sqrt(1 - index_r * index_r * (1 - n.Dot3(i) * n.Dot3(i)))) * n - index_r * i;
     transmitted.Normalize();
     return true;
-        //I=-incoming
-    // float cos_i = normal.Dot3(-1.0f * incoming);
-    // // std::cout << "n dot i:" << n.Dot3(i) << std::endl;
-    // // std::cout << "cos_i: " << cos_i << std::endl;
-    // float eta_r = index_i / index_t;
-    // // std::cout << "index_r: " << index_r << std::endl;
-    // // std::cout << "eta_r: " << eta_r << std::endl;
-    // float squ_cos_t = 1.0f - eta_r * eta_r * (1.0f - cos_i * cos_i);
-    // // std::cout << "discriminant: " << discriminant << std::endl;
-    // // std::cout << "squ_cos_t: " << squ_cos_t << std::endl;
-    // // std::cout << "transmittedL " << transmitted << std::endl;
-    // if (squ_cos_t < 0) { return false; }
-    // transmitted = normal * (eta_r * cos_i - std::sqrt(squ_cos_t)) + incoming * eta_r;
-    // transmitted.Normalize();
-    // // std::cout << "transmittedL " << transmitted << std::endl;
-    // return true;
 }
 } // namespace raytrace

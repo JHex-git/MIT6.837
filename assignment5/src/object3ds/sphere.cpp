@@ -1,6 +1,7 @@
 #include <GL/gl.h>
 #include "object3ds/sphere.h"
 #include "object3ds/boundingbox.h"
+#include "object3ds/grid.h"
 
 namespace object3ds
 {
@@ -87,6 +88,26 @@ void Sphere::paint(void)
         }
     }
     glEnd();
+}
+
+void Sphere::insertIntoGrid(Grid *g, Matrix *m)
+{
+    auto min_index = g->getVoxelIndex(m_bounding_box->getMin());
+    auto max_index = g->getVoxelIndex(m_bounding_box->getMax());
+    for (int i = min_index[0]; i <= max_index[0]; i++)
+    {
+        for (int j = min_index[1]; j <= max_index[1]; j++)
+        {
+            for (int k = min_index[2]; k <= max_index[2]; k++)
+            {
+                auto voxel_center = g->getVoxelCenter(i, j, k);
+                if ((voxel_center - m_center).Length() <= m_radius)
+                {
+                    g->setVoxel(i, j, k, true);
+                }
+            }
+        }
+    }
 }
 
 Vec3f Sphere::getCoordinate(float phi, float theta) const

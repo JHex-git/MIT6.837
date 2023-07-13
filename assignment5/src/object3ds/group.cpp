@@ -13,7 +13,7 @@ Group::Group(int num_objects) : Object3D(nullptr)
         {
             ++i;
         }
-        
+
         if (i < num_objects)
         {
             m_bounding_box = std::make_shared<BoundingBox>(m_objects[i]->getBoundingBox()->getMin(), m_objects[i]->getBoundingBox()->getMax());
@@ -59,6 +59,14 @@ void Group::paint(void)
     for (auto obj: m_objects)
     {
         obj->paint();
+    }
+}
+
+void Group::insertIntoGrid(Grid *g, Matrix *m)
+{
+    for (auto obj: m_objects)
+    {
+        obj->insertIntoGrid(g, m);
     }
 }
 } // namespace object3ds

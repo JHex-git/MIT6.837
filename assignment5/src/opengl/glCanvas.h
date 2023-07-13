@@ -12,6 +12,7 @@
 #define _GL_CANVAS_H_
 
 #include <stdlib.h>
+#include <memory>
 
 namespace object3ds {
   class SceneParser;
@@ -44,10 +45,10 @@ private:
   static void (*traceRayFunction)(float,float);
 
   // A pointer to the global SceneParser
-  static SceneParser *scene;
+  static std::shared_ptr<SceneParser> scene;
 
   // A pointer to the grid
-  static Grid *grid;
+  static std::shared_ptr<Grid> grid;
   static bool visualize_grid;
   static int visualize_grid_march;
 
@@ -77,10 +78,10 @@ public:
   // Note that this function will not return but can be
   // terminated by calling 'exit(0)'
   
-  void initialize(SceneParser *_scene, 
+  void initialize(std::shared_ptr<SceneParser> _scene, 
 		  void (*_renderFunction)(void), 
 		  void (*_traceRayFunction)(float, float),
-		  Grid *_grid, bool _visualize_grid);
+		  std::shared_ptr<Grid> _grid, bool _visualize_grid);
 };
 } // namespace opengl
 

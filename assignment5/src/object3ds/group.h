@@ -22,6 +22,7 @@ public:
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
     void paint(void) override;
+    void insertIntoGrid(Grid *g, Matrix *m) override;
 
 private:
     std::vector<std::shared_ptr<Object3D>> m_objects;

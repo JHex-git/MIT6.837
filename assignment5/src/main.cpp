@@ -48,17 +48,19 @@ float depth_min = 0;
 float depth_max = 1;
 bool shade_back = false;
 
-SceneParser* scene_parser = nullptr;
-RayTracer* ray_tracer = nullptr;
+std::shared_ptr<SceneParser> scene_parser = nullptr;
+std::shared_ptr<RayTracer> ray_tracer = nullptr;
 
 int main(int argc, char *argv[])
 {
-    bool gui = false;
-    bool shadows = false;
-    bool visualize_grid = false;
+    bool b_gui = false;
+    bool b_shadows = false;
+    bool b_visualize_grid = false;
+    bool b_grid = false;
     int bounces = 0;
     float weight = 0.0f;
     int nx = 0, ny = 0, nz = 0;
+    std::shared_ptr<Grid> grid = nullptr;
 
     glutInit(&argc, argv);
     // sample command line:
@@ -88,7 +90,7 @@ int main(int argc, char *argv[])
         } else if (!strcmp(argv[i],"-shade_back")) {
             shade_back = true;
         } else if (!strcmp(argv[i],"-gui")) {
-            gui = true;
+            b_gui = true;
         } else if (!strcmp(argv[i],"-tessellation")) {
             i++; assert (i < argc); 
             Sphere::theta_steps = atoi(argv[i]);
@@ -97,7 +99,7 @@ int main(int argc, char *argv[])
         } else if (!strcmp(argv[i],"-gouraud")) {
             Sphere::gouraud = true;
         } else if (!strcmp(argv[i],"-shadows")) {
-            shadows = true;
+            b_shadows = true;
         } else if (!strcmp(argv[i],"-bounces")) {
             i++; assert (i < argc); 
             bounces = atoi(argv[i]);
@@ -105,8 +107,9 @@ int main(int argc, char *argv[])
             i++; assert (i < argc); 
             weight = atof(argv[i]);
         } else if (!strcmp(argv[i],"-visualize_grid")) {
-            visualize_grid = true;
+            b_visualize_grid = true;
         } else if (!strcmp(argv[i], "-grid")) {
+            b_grid = true;
             i++; assert (i < argc);
             nx = atoi(argv[i]);
             i++; assert (i < argc);
@@ -121,10 +124,10 @@ int main(int argc, char *argv[])
     }
     
     GLCanvas canvas;
-    scene_parser = new SceneParser(input_file);
-    ray_tracer = new RayTracer(scene_parser, bounces, weight, shadows, shade_back);
-    Grid grid(scene_parser->getGroup()->getBoundingBox(), nx, ny, nz);
-    if (gui) canvas.initialize(scene_parser, Render, TraceRay, &grid, visualize_grid);
+    scene_parser = std::make_shared<SceneParser>(input_file);
+    if (b_grid) grid = std::make_shared<Grid>(scene_parser->getGroup()->getBoundingBox(), nx, ny, nz);
+    ray_tracer = std::make_shared<RayTracer>(scene_parser, grid, bounces, weight, b_shadows, shade_back, b_visualize_grid);
+    if (b_gui) canvas.initialize(scene_parser, Render, TraceRay, grid, b_visualize_grid);
     else
     {
         Render();
