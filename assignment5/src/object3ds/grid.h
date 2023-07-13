@@ -22,6 +22,7 @@ public:
 
     inline bool getVoxel(int x, int y, int z) const { return m_voxels[x][y][z]; }
     inline void setVoxel(int x, int y, int z, bool opaque) { m_voxels[x][y][z] = opaque; }
+    inline float getVoxelDiagonalLength() const { return std::sqrt(m_dx * m_dx + m_dy * m_dy + m_dz * m_dz); }
     Vec3f getVoxelCenter(int x, int y, int z) const;
     std::vector<int> getVoxelIndex(const Vec3f &p) const;
 

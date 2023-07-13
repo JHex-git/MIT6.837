@@ -125,9 +125,16 @@ std::vector<int> Grid::getVoxelIndex(const Vec3f &p) const
 {
     Vec3f min = m_bounding_box->getMin();
     Vec3f max = m_bounding_box->getMax();
+    // for edge corner, clamp it to the nearest valid voxel
     int x = (p.x() - min.x()) / m_dx;
+    x = std::min(x, m_nx - 1);
+    x = std::max(0, x);
     int y = (p.y() - min.y()) / m_dy;
+    y = std::min(y, m_ny - 1);
+    y = std::max(0, y);
     int z = (p.z() - min.z()) / m_dz;
+    z = std::min(z, m_nz - 1);
+    z = std::max(0, z);
     return std::vector<int>{x, y, z};
 }
 } // namespace object3ds
