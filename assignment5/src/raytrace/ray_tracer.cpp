@@ -2,6 +2,7 @@
 #include "utility/vectors.h"
 #include "object3ds/scene_parser.h"
 #include "object3ds/group.h"
+#include "object3ds/grid.h"
 #include "lights/light.h"
 #include "raytrace/rayTree.h"
 
@@ -19,6 +20,19 @@ RayTracer::RayTracer(std::shared_ptr<SceneParser> s, std::shared_ptr<Grid> grid,
 
 Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight, 
                 float indexOfRefraction, Hit &hit) const
+{
+    if (m_visualize_grid) return traceRayGrid(ray, tmin, bounces, weight, indexOfRefraction, hit);
+    else return traceRayScene(ray, tmin, bounces, weight, indexOfRefraction, hit);
+}
+
+Vec3f RayTracer::traceRayGrid(const Ray &ray, float tmin, int bounces, float weight, 
+                    float indexOfRefraction, Hit &hit) const
+{
+    m_grid->intersect(ray, hit, tmin);
+}
+
+Vec3f RayTracer::traceRayScene(const Ray &ray, float tmin, int bounces, float weight, 
+                    float indexOfRefraction, Hit &hit) const
 {
     // Reinitialize hit to be a miss.
     hit.set(tmin, nullptr, Vec3f(0, 0, 0), ray);
@@ -75,8 +89,8 @@ Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight,
         {
             Ray reflect_ray(ray.pointAtParameter(hit.getT()), mirrorDirection(normal, ray.getDirection()));
             Hit reflect_hit;
-            // color += reflective_color * traceRay(reflect_ray, tmin, bounces + 1, weight * reflective_color.Length(), indexOfRefraction, reflect_hit);
-            color += reflective_color * traceRay(reflect_ray, epsilon, bounces + 1, weight * reflective_color.Length() / std::sqrt(3), indexOfRefraction, reflect_hit);
+            // color += reflective_color * traceRayScene(reflect_ray, tmin, bounces + 1, weight * reflective_color.Length(), indexOfRefraction, reflect_hit);
+            color += reflective_color * traceRayScene(reflect_ray, epsilon, bounces + 1, weight * reflective_color.Length() / std::sqrt(3), indexOfRefraction, reflect_hit);
             if (reflect_hit.getT() != 0)
             {
                 RayTree::AddReflectedSegment(reflect_ray, 0, reflect_hit.getT());
@@ -96,8 +110,8 @@ Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight,
             {
                 Ray transmitted_ray(ray.pointAtParameter(hit.getT()), transmitted_direction);
                 Hit transmitted_hit;
-                // transmitted_color = traceRay(transmitted_ray, tmin, bounces + 1, weight * transparent_color.Length(), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
-                color += transparent_color * traceRay(transmitted_ray, epsilon, bounces + 1, weight * transparent_color.Length() / std::sqrt(3), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
+                // transmitted_color = traceRayScene(transmitted_ray, tmin, bounces + 1, weight * transparent_color.Length(), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
+                color += transparent_color * traceRayScene(transmitted_ray, epsilon, bounces + 1, weight * transparent_color.Length() / std::sqrt(3), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
                 if (transmitted_hit.getT() != 0)
                 {
                     RayTree::AddTransmittedSegment(transmitted_ray, 0, transmitted_hit.getT());

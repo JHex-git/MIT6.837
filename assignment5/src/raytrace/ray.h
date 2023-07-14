@@ -13,6 +13,7 @@
 namespace raytrace
 {
 using utility::Vec3f;
+
 class Ray {
 
 public:

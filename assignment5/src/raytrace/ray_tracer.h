@@ -36,6 +36,10 @@ private:
     Vec3f mirrorDirection(const Vec3f &normal, const Vec3f &incoming) const;
     bool transmittedDirection(const Vec3f &normal, const Vec3f &incoming, 
                                 float index_i, float index_t, Vec3f &transmitted) const;
+    Vec3f traceRayGrid(const Ray &ray, float tmin, int bounces, float weight, 
+                    float indexOfRefraction, Hit &hit) const;
+    Vec3f traceRayScene(const Ray &ray, float tmin, int bounces, float weight, 
+                    float indexOfRefraction, Hit &hit) const;
 
     std::shared_ptr<SceneParser> m_scene_parser;
     std::shared_ptr<Grid> m_grid;
