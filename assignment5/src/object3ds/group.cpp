@@ -17,7 +17,11 @@ void Group::addObject(int index, Object3D* obj)
 
     m_objects[index] = std::shared_ptr<Object3D>(obj);
     if (m_bounding_box == nullptr) m_bounding_box = std::make_shared<BoundingBox>(m_objects[index]->getBoundingBox()->getMin(), m_objects[index]->getBoundingBox()->getMax());
-    else m_bounding_box->Extend(m_objects[index]->getBoundingBox().get());
+    else 
+    {
+        BoundingBox* bb = m_objects[index]->getBoundingBox().get();
+        if (bb != nullptr) m_bounding_box->Extend(m_objects[index]->getBoundingBox().get());
+    }
 }
 
 bool Group::intersect(const Ray &r, Hit &h, float tmin)

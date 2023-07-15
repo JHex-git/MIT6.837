@@ -61,8 +61,7 @@ int main(int argc, char *argv[])
     bool b_grid = false;
     int bounces = 0;
     float weight = 0.0f;
-    int nx = 0, ny = 0, nz = 0;
-    std::shared_ptr<Grid> grid = nullptr;
+    int nx = -1, ny = -1, nz = -1;
 
     glutInit(&argc, argv);
     // sample command line:
@@ -127,9 +126,8 @@ int main(int argc, char *argv[])
     
     GLCanvas canvas;
     scene_parser = std::make_shared<SceneParser>(input_file);
-    if (b_grid) grid = std::make_shared<Grid>(scene_parser->getGroup()->getBoundingBox(), nx, ny, nz);
-    ray_tracer = std::make_shared<RayTracer>(scene_parser, grid, bounces, weight, b_shadows, shade_back, b_visualize_grid);
-    if (b_gui) canvas.initialize(scene_parser, Render, TraceRay, grid, b_visualize_grid);
+    ray_tracer = std::make_shared<RayTracer>(scene_parser, bounces, weight, b_shadows, shade_back, b_grid, nx, ny, nz, b_visualize_grid);
+    if (b_gui) canvas.initialize(scene_parser, Render, TraceRay, ray_tracer->getGrid(), b_visualize_grid);
     else
     {
         Render();

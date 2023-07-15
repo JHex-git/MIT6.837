@@ -26,11 +26,13 @@ using utility::Vec3f;
 class RayTracer
 {
 public:
-    RayTracer(std::shared_ptr<SceneParser> s, std::shared_ptr<Grid> grid, int max_bounces, float cutoff_weight, 
-                bool shadows, bool shade_back, bool visualize_grid);
+    RayTracer(std::shared_ptr<SceneParser> s, int max_bounces, float cutoff_weight, 
+                bool shadows, bool shade_back, bool grid, int nx, int ny, int nz, bool visualize_grid);
 
     Vec3f traceRay(const Ray &ray, float tmin, int bounces, float weight, 
                     float indexOfRefraction, Hit &hit) const;
+    
+    std::shared_ptr<Grid> getGrid() const { return m_grid; }
 
 private:
     Vec3f mirrorDirection(const Vec3f &normal, const Vec3f &incoming) const;

@@ -10,12 +10,18 @@ namespace raytrace
 {
 constexpr float epsilon = 0.001f;
 
-RayTracer::RayTracer(std::shared_ptr<SceneParser> s, std::shared_ptr<Grid> grid, int max_bounces, float cutoff_weight, 
-                        bool shadows, bool shade_back, bool visualize_grid)
-                        : m_scene_parser(s), m_grid(grid), m_max_bounces(max_bounces), m_cutoff_weight(cutoff_weight), 
+RayTracer::RayTracer(std::shared_ptr<SceneParser> s, int max_bounces, float cutoff_weight, 
+                        bool shadows, bool shade_back, bool grid, int nx, int ny, int nz, bool visualize_grid)
+                        : m_scene_parser(s), m_max_bounces(max_bounces), m_cutoff_weight(cutoff_weight), 
                         m_shadows(shadows), m_shade_back(shade_back), m_visualize_grid(visualize_grid)
 {
-    m_scene_parser->getGroup()->insertIntoGrid(m_grid.get(), nullptr);
+    if (grid)
+    {
+        assert(nx > 0 && ny > 0 && nz > 0);
+        m_grid = std::make_shared<Grid>(m_scene_parser->getGroup()->getBoundingBox(), nx, ny, nz);
+        m_scene_parser->getGroup()->insertIntoGrid(m_grid.get(), nullptr);
+    }
+    else m_grid = nullptr;
 }
 
 Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight, 
