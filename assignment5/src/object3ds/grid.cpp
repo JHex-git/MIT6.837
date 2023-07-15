@@ -14,9 +14,10 @@ Grid::Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz) : m_nx(nx), 
     m_bounding_box = bb;
     Vec3f min = m_bounding_box->getMin();
     Vec3f max = m_bounding_box->getMax();
-    m_dx = (max.x() - min.x()) / m_nx;
-    m_dy = (max.y() - min.y()) / m_ny;
-    m_dz = (max.z() - min.z()) / m_nz;
+    auto diff = max - min;
+    m_dx = diff.x() / m_nx;
+    m_dy = diff.y() / m_ny;
+    m_dz = diff.z() / m_nz;
     m_material = new materials::PhongMaterial(Vec3f(1, 1, 1), Vec3f(0, 0, 0), 1, Vec3f(1, 1, 1), Vec3f(1, 1, 1), 1);
 }
 

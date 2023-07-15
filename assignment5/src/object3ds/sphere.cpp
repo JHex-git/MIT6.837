@@ -9,6 +9,7 @@ namespace object3ds
 int Sphere::theta_steps = 1;
 int Sphere::phi_steps = 1;
 bool Sphere::gouraud = false;
+constexpr float epsilon = 0.001f;
 
 Sphere::Sphere(const Vec3f &center, float radius, Material* material) : 
     Object3D(material), m_center(center), m_radius(radius) 
@@ -92,16 +93,31 @@ void Sphere::paint(void) const
 
 void Sphere::insertIntoGrid(Grid *g, Matrix *m)
 {
-    auto min_index = g->getVoxelIndex(m_bounding_box->getMin());
-    auto max_index = g->getVoxelIndex(m_bounding_box->getMax());
+    float half_diagonal_length = g->getVoxelDiagonalLength() / 2.0;
+
+    // When the bounding box is on the edge of a voxel, the voxel will be missed, so extra epsilon is needed.
+    auto min_index = g->getVoxelIndex(m_bounding_box->getMin() - Vec3f(half_diagonal_length, half_diagonal_length, half_diagonal_length));
+    for (int i = 0; i < min_index.size(); ++i)
+    {
+        min_index[i] = std::max(min_index[i], 0);
+    }
+
+    // When the bounding box is on the edge of a voxel, the voxel will be missed, so extra voxels are needed.
+    auto max_index = g->getVoxelIndex(m_bounding_box->getMax() + Vec3f(half_diagonal_length, half_diagonal_length, half_diagonal_length));
+    auto voxel_num = g->getVoxelNum();
+    for (int i = 0; i < max_index.size(); ++i)
+    {
+        max_index[i] = max_index[i] == -1 ? voxel_num[i] - 1 : max_index[i];
+    }
+
     for (int i = min_index[0]; i <= max_index[0]; i++)
     {
         for (int j = min_index[1]; j <= max_index[1]; j++)
         {
-            for (int k = min_index[2]; k <= max_index[2]; k++)
+            for (int k = 0; k <= max_index[2]; k++)
             {
                 auto voxel_center = g->getVoxelCenter(i, j, k);
-                if ((voxel_center - m_center).Length() <= m_radius + g->getVoxelDiagonalLength() / 2.0)
+                if ((voxel_center - m_center).Length() <= m_radius + half_diagonal_length)
                 {
                     g->setVoxel(i, j, k, true);
                 }

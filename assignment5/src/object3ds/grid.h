@@ -29,6 +29,7 @@ public:
     Vec3f getVoxelCenter(int x, int y, int z) const;
     // for pointer outside the bounding box, return (-1, -1, -1)
     std::vector<int> getVoxelIndex(const Vec3f &p) const;
+    inline std::vector<int> getVoxelNum() const { return {m_nx, m_ny, m_nz}; }
 
 private:
     void initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const;
