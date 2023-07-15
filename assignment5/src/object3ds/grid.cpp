@@ -24,13 +24,10 @@ Grid::Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz) : m_nx(nx), 
 bool Grid::intersect(const Ray &r, Hit &h, float tmin)
 {
     initializeRayMarch(m_mi, r, tmin);
-    std::cout << "start point:" << r.pointAtParameter(m_mi.getTmin()) << std::endl;
     auto voxel_index = m_mi.getVoxelIndex();
     bool b_first_hit = false;
     while (voxel_index[0] > -1 && voxel_index[1] > -1 && voxel_index[2] > -1 && voxel_index[0] < m_nx && voxel_index[1] < m_ny && voxel_index[2] < m_nz)
     {
-        std::cout << voxel_index[0] << " " << voxel_index[1] << " " << voxel_index[2] << std::endl;
-        std::cout << "intersect point:" << r.pointAtParameter(m_mi.getTmin()) << std::endl;
         Vec3f normal = m_mi.getCrossFaceNormal();
         auto enter_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
         RayTree::AddEnteredFace(enter_face_points[0], enter_face_points[1], enter_face_points[2], enter_face_points[3], normal, m_material);
@@ -299,11 +296,8 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
             Vec3f center = getVoxelCenter(start_point_index[0], start_point_index[1], start_point_index[2]);
             min = center - Vec3f(m_dx / 2, m_dy / 2, m_dz / 2);
             max = center + Vec3f(m_dx / 2, m_dy / 2, m_dz / 2);
-            std::cout << "min:" << min << std::endl;
-            std::cout << "max:" << max << std::endl;
             if (intersectBox(r, hit, min, max, tmin))
             {
-                std::cout << "hit point:" << r.pointAtParameter(hit.getT()) << std::endl;
                 mi.setVoxelIndex(start_point_index[0], start_point_index[1], start_point_index[2]);
                 mi.setCrossFaceNormal(hit.getNormal());
                 float t = hit.getT();
@@ -322,9 +316,6 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
                 float t_delta_z = sign_z == 1 ? offset_max.z() : offset_min.z();
                 t_delta_z /= std::abs(r.getDirection().z());
                 mi.setNextT(t + t_delta_x, t + t_delta_y, t + t_delta_z);
-                std::cout << "next x point: " << r.pointAtParameter(t + t_delta_x) << std::endl;
-                std::cout << "next y point: " << r.pointAtParameter(t + t_delta_y) << std::endl;
-                std::cout << "next z point: " << r.pointAtParameter(t + t_delta_z) << std::endl;
 
                 t_delta_x = m_dx / std::abs(r.getDirection().x());
                 t_delta_y = m_dy / std::abs(r.getDirection().y());
