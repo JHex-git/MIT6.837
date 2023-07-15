@@ -138,8 +138,7 @@ int main(int argc, char *argv[])
 
 void Render()
 {
-    Group *group = scene_parser->getGroup();
-    Hit tmp;
+    Hit hit;
     Image result(width, height);
     Image depth_img(width, height);
     Image normal_img(width, height);
@@ -152,16 +151,16 @@ void Render()
         for (int j = 0; j < size; j++)
         {
             auto ray = scene_parser->getCamera()->generateRay(Vec2f((float)i / size, (float)j / size));
-            Vec3f shade_color = ray_tracer->traceRay(ray, scene_parser->getCamera()->getTMin(), 0, 1, 1, tmp); // camera always placed in air, not in object, so index of refraction is 1
-            if (tmp.getT() > scene_parser->getCamera()->getTMin()) // has intersect
+            Vec3f shade_color = ray_tracer->traceRay(ray, scene_parser->getCamera()->getTMin(), 0, 1, 1, hit); // camera always placed in air, not in object, so index of refraction is 1
+            if (hit.getT() > scene_parser->getCamera()->getTMin()) // has intersect
             {
-                Vec3f normal = tmp.getNormal();
+                Vec3f normal = hit.getNormal();
                 result.SetPixel(i, j, shade_color);
 
                 if (depth_file != NULL) 
                 {
                     // clamp depth
-                    float depth = tmp.getT();
+                    float depth = hit.getT();
                     depth = std::min(depth, depth_max);
                     depth = std::max(depth, depth_min);
                     depth = (depth_max - depth) / (depth_max - depth_min);

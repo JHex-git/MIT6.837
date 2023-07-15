@@ -22,18 +22,19 @@ public:
 
     inline std::vector<int> getVoxelIndex() const { return std::vector<int>{m_index_x, m_index_y, m_index_z}; }
     inline Vec3f getCrossFaceNormal() const { return m_cross_face_normal; } 
+    inline float getTmin() const { return m_tmin; }
 
 private:
     int m_index_x;
     int m_index_y;
     int m_index_z;
-    float m_tmin;
-    float m_t_next_x; // the t to enter the next x voxel
-    float m_t_next_y; // the t to enter the next y voxel
-    float m_t_next_z; // the t to enter the next z voxel
-    float m_t_delta_x; // delta t to cross every x voxel
-    float m_t_delta_y; // delta t to cross every y voxel
-    float m_t_delta_z; // delta t to cross every z voxel
+    float m_tmin;       // the intersection t with current voxel
+    float m_t_next_x;   // the t to enter the next x voxel
+    float m_t_next_y;   // the t to enter the next y voxel
+    float m_t_next_z;   // the t to enter the next z voxel
+    float m_t_delta_x;  // delta t to cross every x voxel
+    float m_t_delta_y;  // delta t to cross every y voxel
+    float m_t_delta_z;  // delta t to cross every z voxel
     int m_sign_x;
     int m_sign_y;
     int m_sign_z;

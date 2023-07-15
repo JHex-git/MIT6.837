@@ -47,10 +47,16 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
         hit_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
         RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, m_material);
         
+        if (m_voxels[voxel_index[0]][voxel_index[1]][voxel_index[2]])
+        {
+            
+            h.set(m_mi.getTmin(), m_material, normal, r);
+            return true;
+        }
         m_mi.nextCell();
         voxel_index = m_mi.getVoxelIndex();
     }
-    return true;
+    return false;
 }
 
 void Grid::paint(void) const
@@ -307,7 +313,7 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
                 t_delta_z = m_dz / std::abs(r.getDirection().z());
                 mi.setDeltaT(t_delta_x, t_delta_y, t_delta_z);
 
-                mi.setTmin(tmin);
+                mi.setTmin(t);
             }
         }
     }
