@@ -6,7 +6,7 @@ void MarchingInfo::nextCell()
 {
     int cell_direction = 0;
     if (m_t_next_y < m_t_next_x) cell_direction = 1;
-    if (m_t_next_z < m_t_next_y) cell_direction = 2;
+    if ((m_t_next_z < m_t_next_y && cell_direction == 1) || (m_t_next_z < m_t_next_x && cell_direction == 0)) cell_direction = 2;
     switch (cell_direction)
     {
         case 0:

@@ -35,7 +35,8 @@ Vec3f RayTracer::traceRayGrid(const Ray &ray, float tmin, int bounces, float wei
 
     if (m_grid->intersect(ray, hit, tmin))
     {
-        RayTree::SetMainSegment(ray, tmin, hit.getT());
+        // RayTree::SetMainSegment(ray, tmin, hit.getT());
+        RayTree::SetMainSegment(ray, tmin, 100);
         Vec3f normal = hit.getNormal();
         float normal_dot_ray = normal.Dot3(ray.getDirection());
         if (normal_dot_ray > 0) // at back side
