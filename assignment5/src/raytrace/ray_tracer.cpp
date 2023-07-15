@@ -33,14 +33,9 @@ Vec3f RayTracer::traceRayGrid(const Ray &ray, float tmin, int bounces, float wei
 
     Vec3f color(0, 0, 0);
 
-    if (bounces > m_max_bounces || weight < m_cutoff_weight)
-    {
-        return color;
-    }
-
     if (m_grid->intersect(ray, hit, tmin))
     {
-        if (bounces == 0) RayTree::SetMainSegment(ray, tmin, hit.getT());
+        RayTree::SetMainSegment(ray, tmin, hit.getT());
         Vec3f normal = hit.getNormal();
         float normal_dot_ray = normal.Dot3(ray.getDirection());
         if (normal_dot_ray > 0) // at back side
@@ -53,30 +48,6 @@ Vec3f RayTracer::traceRayGrid(const Ray &ray, float tmin, int bounces, float wei
         }
 
         Material* material = hit.getMaterial();
-        // auto voxel_index = m_grid->getVoxelIndex(ray.pointAtParameter(hit.getT()));
-        // auto enter_face_points = m_grid->getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        // RayTree::AddEnteredFace(enter_face_points[0], enter_face_points[1], enter_face_points[2], enter_face_points[3], normal, hit.getMaterial());
-
-        // normal = Vec3f(1, 0, 0);
-        // auto hit_face_points = m_grid->getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        // RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, material);
-        // normal = Vec3f(-1, 0, 0);
-        // hit_face_points = m_grid->getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        // RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, material);
-        // normal = Vec3f(0, 1, 0);
-        // hit_face_points = m_grid->getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        // RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, material);
-        // normal = Vec3f(0, -1, 0);
-        // hit_face_points = m_grid->getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        // RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, material);
-        // normal = Vec3f(0, 0, 1);
-        // hit_face_points = m_grid->getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        // RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, material);
-        // normal = Vec3f(0, 0, -1);
-        // hit_face_points = m_grid->getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        // RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, material);
-
-        // normal = hit.getNormal();
         color = material->getDiffuseColor() * m_scene_parser->getAmbientLight();
         for (int iLight = 0; iLight < m_scene_parser->getNumLights(); ++iLight)
         {

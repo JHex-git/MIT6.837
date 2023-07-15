@@ -17,7 +17,8 @@ using raytrace::MarchingInfo;
 class Grid: public Object3D
 {
 public:
-    Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz); 
+    Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz);
+    ~Grid() override { delete m_material; }
     
     bool intersect(const Ray &r, Hit &h, float tmin) override;
     void paint(void) const override;

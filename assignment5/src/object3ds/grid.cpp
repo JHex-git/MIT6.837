@@ -2,6 +2,7 @@
 #include "object3ds/boundingbox.h"
 #include "utility/vectors.h"
 #include "raytrace/rayTree.h"
+#include "materials/phong_material.h"
 #include <GL/gl.h>
 
 namespace object3ds
@@ -16,6 +17,7 @@ Grid::Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz) : m_nx(nx), 
     m_dx = (max.x() - min.x()) / m_nx;
     m_dy = (max.y() - min.y()) / m_ny;
     m_dz = (max.z() - min.z()) / m_nz;
+    m_material = new materials::PhongMaterial(Vec3f(1, 1, 1), Vec3f(0, 0, 0), 1, Vec3f(1, 1, 1), Vec3f(1, 1, 1), 1);
 }
 
 bool Grid::intersect(const Ray &r, Hit &h, float tmin)
@@ -61,6 +63,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
 
 void Grid::paint(void) const
 {
+    m_material->glSetMaterial();
     glBegin(GL_QUADS);
     for (int i = 0; i < m_nx; ++i)
     {
@@ -74,24 +77,26 @@ void Grid::paint(void) const
                     Vec3f normal;
                     Vec3f p1, p2, p3, p4;
                     
-                    // bottom
+                    // back
                     p1 = Vec3f(center.x() - m_dx / 2, center.y() - m_dy / 2, center.z() - m_dz / 2);
                     p2 = Vec3f(center.x() + m_dx / 2, center.y() - m_dy / 2, center.z() - m_dz / 2);
                     p3 = Vec3f(center.x() + m_dx / 2, center.y() + m_dy / 2, center.z() - m_dz / 2);
                     p4 = Vec3f(center.x() - m_dx / 2, center.y() + m_dy / 2, center.z() - m_dz / 2);
                     normal = Vec3f(0, 0, -1);
+                    // normal = Vec3f(0, -1, 0);
                     glNormal3f(normal[0], normal[1], normal[2]);
                     glVertex3f(p1[0], p1[1], p1[2]);
                     glVertex3f(p2[0], p2[1], p2[2]);
                     glVertex3f(p3[0], p3[1], p3[2]);
                     glVertex3f(p4[0], p4[1], p4[2]);
 
-                    // top
+                    // front
                     p1 = Vec3f(center.x() - m_dx / 2, center.y() - m_dy / 2, center.z() + m_dz / 2);
                     p2 = Vec3f(center.x() + m_dx / 2, center.y() - m_dy / 2, center.z() + m_dz / 2);
                     p3 = Vec3f(center.x() + m_dx / 2, center.y() + m_dy / 2, center.z() + m_dz / 2);
                     p4 = Vec3f(center.x() - m_dx / 2, center.y() + m_dy / 2, center.z() + m_dz / 2);
                     normal = Vec3f(0, 0, 1);
+                    // normal = Vec3f(0, -1, 0);
                     glNormal3f(normal[0], normal[1], normal[2]);
                     glVertex3f(p1[0], p1[1], p1[2]);
                     glVertex3f(p2[0], p2[1], p2[2]);
@@ -104,6 +109,7 @@ void Grid::paint(void) const
                     p3 = Vec3f(center.x() - m_dx / 2, center.y() + m_dy / 2, center.z() + m_dz / 2);
                     p4 = Vec3f(center.x() - m_dx / 2, center.y() - m_dy / 2, center.z() + m_dz / 2);
                     normal = Vec3f(-1, 0, 0);
+                    // normal = Vec3f(0, -1, 0);
                     glNormal3f(normal[0], normal[1], normal[2]);
                     glVertex3f(p1[0], p1[1], p1[2]);
                     glVertex3f(p2[0], p2[1], p2[2]);
@@ -116,30 +122,32 @@ void Grid::paint(void) const
                     p3 = Vec3f(center.x() + m_dx / 2, center.y() + m_dy / 2, center.z() + m_dz / 2);
                     p4 = Vec3f(center.x() + m_dx / 2, center.y() - m_dy / 2, center.z() + m_dz / 2);
                     normal = Vec3f(1, 0, 0);
+                    // normal = Vec3f(0, -1, 0);
                     glNormal3f(normal[0], normal[1], normal[2]);
                     glVertex3f(p1[0], p1[1], p1[2]);
                     glVertex3f(p2[0], p2[1], p2[2]);
                     glVertex3f(p3[0], p3[1], p3[2]);
                     glVertex3f(p4[0], p4[1], p4[2]);
 
-                    // front
-                    p1 = Vec3f(center.x() - m_dx / 2, center.y() - m_dy / 2, center.z() - m_dz / 2);
-                    p2 = Vec3f(center.x() + m_dx / 2, center.y() - m_dy / 2, center.z() - m_dz / 2);
-                    p3 = Vec3f(center.x() + m_dx / 2, center.y() - m_dy / 2, center.z() + m_dz / 2);
-                    p4 = Vec3f(center.x() - m_dx / 2, center.y() - m_dy / 2, center.z() + m_dz / 2);
-                    normal = Vec3f(0, -1, 0);
-                    glNormal3f(normal[0], normal[1], normal[2]);
-                    glVertex3f(p1[0], p1[1], p1[2]);
-                    glVertex3f(p2[0], p2[1], p2[2]);
-                    glVertex3f(p3[0], p3[1], p3[2]);
-                    glVertex3f(p4[0], p4[1], p4[2]);
-
-                    // back
+                    // The order of points matters as opengl use winder order to determine front-facing or back-facing
+                    // top
                     p1 = Vec3f(center.x() - m_dx / 2, center.y() + m_dy / 2, center.z() - m_dz / 2);
-                    p2 = Vec3f(center.x() + m_dx / 2, center.y() + m_dy / 2, center.z() - m_dz / 2);
+                    p2 = Vec3f(center.x() - m_dx / 2, center.y() + m_dy / 2, center.z() + m_dz / 2);
                     p3 = Vec3f(center.x() + m_dx / 2, center.y() + m_dy / 2, center.z() + m_dz / 2);
-                    p4 = Vec3f(center.x() - m_dx / 2, center.y() + m_dy / 2, center.z() + m_dz / 2);
+                    p4 = Vec3f(center.x() + m_dx / 2, center.y() + m_dy / 2, center.z() - m_dz / 2);
                     normal = Vec3f(0, 1, 0);
+                    glNormal3f(normal[0], normal[1], normal[2]);
+                    glVertex3f(p1[0], p1[1], p1[2]);
+                    glVertex3f(p2[0], p2[1], p2[2]);
+                    glVertex3f(p3[0], p3[1], p3[2]);
+                    glVertex3f(p4[0], p4[1], p4[2]);
+
+                    // bottom
+                    p1 = Vec3f(center.x() - m_dx / 2, center.y() - m_dy / 2, center.z() - m_dz / 2);
+                    p2 = Vec3f(center.x() - m_dx / 2, center.y() - m_dy / 2, center.z() + m_dz / 2);
+                    p3 = Vec3f(center.x() + m_dx / 2, center.y() - m_dy / 2, center.z() + m_dz / 2);
+                    p4 = Vec3f(center.x() + m_dx / 2, center.y() - m_dy / 2, center.z() - m_dz / 2);
+                    normal = Vec3f(0, -1, 0);
                     glNormal3f(normal[0], normal[1], normal[2]);
                     glVertex3f(p1[0], p1[1], p1[2]);
                     glVertex3f(p2[0], p2[1], p2[2]);
