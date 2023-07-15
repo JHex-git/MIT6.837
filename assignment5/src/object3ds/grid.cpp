@@ -51,6 +51,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
         hit_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
         RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, m_material);
         
+        normal = m_mi.getCrossFaceNormal();
         if (m_voxels[voxel_index[0]][voxel_index[1]][voxel_index[2]] && !b_first_hit)
         {
             b_first_hit = true;
