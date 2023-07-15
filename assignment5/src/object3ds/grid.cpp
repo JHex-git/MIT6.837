@@ -9,6 +9,8 @@ namespace object3ds
 {
 using raytrace::RayTree;
 
+constexpr float epsilon = 0.001f;
+
 Grid::Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz) : m_nx(nx), m_ny(ny), m_nz(nz), m_voxels(nx, std::vector<std::vector<bool>>(ny, std::vector<bool>(nz, false)))
 {
     m_bounding_box = bb;
@@ -175,8 +177,9 @@ std::vector<int> Grid::getVoxelIndex(const Vec3f &p) const
     Vec3f min = m_bounding_box->getMin();
     Vec3f max = m_bounding_box->getMax();
 
+
     // for pointer outside the bounding box, return (-1, -1, -1)
-    if (p.x() < min.x() || p.x() > max.x() || p.y() < min.y() || p.y() > max.y() || p.z() < min.z() || p.z() > max.z())
+    if (p.x() < min.x() - epsilon || p.x() > max.x() + epsilon || p.y() < min.y() - epsilon || p.y() > max.y() + epsilon || p.z() < min.z() - epsilon || p.z() > max.z() + epsilon)
         return std::vector<int>{-1, -1, -1};
 
     // for edge corner, clamp it to the nearest valid voxel
