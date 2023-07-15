@@ -59,6 +59,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
         m_mi.nextCell();
         voxel_index = m_mi.getVoxelIndex();
     }
+
     return b_first_hit;
 }
 
@@ -291,39 +292,36 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
     auto start_point_index = getVoxelIndex(start_point_in_bb);
     if (start_point_index[0] != -1)
     {
-        if (m_voxels[start_point_index[0]][start_point_index[1]][start_point_index[2]])
+        Vec3f center = getVoxelCenter(start_point_index[0], start_point_index[1], start_point_index[2]);
+        min = center - Vec3f(m_dx / 2, m_dy / 2, m_dz / 2);
+        max = center + Vec3f(m_dx / 2, m_dy / 2, m_dz / 2);
+        if (intersectBox(r, hit, min, max, tmin))
         {
-            Vec3f center = getVoxelCenter(start_point_index[0], start_point_index[1], start_point_index[2]);
-            min = center - Vec3f(m_dx / 2, m_dy / 2, m_dz / 2);
-            max = center + Vec3f(m_dx / 2, m_dy / 2, m_dz / 2);
-            if (intersectBox(r, hit, min, max, tmin))
-            {
-                mi.setVoxelIndex(start_point_index[0], start_point_index[1], start_point_index[2]);
-                mi.setCrossFaceNormal(hit.getNormal());
-                float t = hit.getT();
-                Vec3f intersection = r.pointAtParameter(t);
-                int sign_x = r.getDirection().x() > 0 ? 1 : -1;
-                int sign_y = r.getDirection().y() > 0 ? 1 : -1;
-                int sign_z = r.getDirection().z() > 0 ? 1 : -1;
-                mi.setSign(sign_x, sign_y, sign_z);
+            mi.setVoxelIndex(start_point_index[0], start_point_index[1], start_point_index[2]);
+            mi.setCrossFaceNormal(hit.getNormal());
+            float t = hit.getT();
+            Vec3f intersection = r.pointAtParameter(t);
+            int sign_x = r.getDirection().x() > 0 ? 1 : -1;
+            int sign_y = r.getDirection().y() > 0 ? 1 : -1;
+            int sign_z = r.getDirection().z() > 0 ? 1 : -1;
+            mi.setSign(sign_x, sign_y, sign_z);
 
-                Vec3f offset_min = intersection - min;
-                Vec3f offset_max = max - intersection;
-                float t_delta_x = sign_x == 1 ? offset_max.x() : offset_min.x();
-                t_delta_x /= std::abs(r.getDirection().x());
-                float t_delta_y = sign_y == 1 ? offset_max.y() : offset_min.y();
-                t_delta_y /= std::abs(r.getDirection().y());
-                float t_delta_z = sign_z == 1 ? offset_max.z() : offset_min.z();
-                t_delta_z /= std::abs(r.getDirection().z());
-                mi.setNextT(t + t_delta_x, t + t_delta_y, t + t_delta_z);
+            Vec3f offset_min = intersection - min;
+            Vec3f offset_max = max - intersection;
+            float t_delta_x = sign_x == 1 ? offset_max.x() : offset_min.x();
+            t_delta_x /= std::abs(r.getDirection().x());
+            float t_delta_y = sign_y == 1 ? offset_max.y() : offset_min.y();
+            t_delta_y /= std::abs(r.getDirection().y());
+            float t_delta_z = sign_z == 1 ? offset_max.z() : offset_min.z();
+            t_delta_z /= std::abs(r.getDirection().z());
+            mi.setNextT(t + t_delta_x, t + t_delta_y, t + t_delta_z);
 
-                t_delta_x = m_dx / std::abs(r.getDirection().x());
-                t_delta_y = m_dy / std::abs(r.getDirection().y());
-                t_delta_z = m_dz / std::abs(r.getDirection().z());
-                mi.setDeltaT(t_delta_x, t_delta_y, t_delta_z);
+            t_delta_x = m_dx / std::abs(r.getDirection().x());
+            t_delta_y = m_dy / std::abs(r.getDirection().y());
+            t_delta_z = m_dz / std::abs(r.getDirection().z());
+            mi.setDeltaT(t_delta_x, t_delta_y, t_delta_z);
 
-                mi.setTmin(t);
-            }
+            mi.setTmin(t);
         }
     }
     
