@@ -86,7 +86,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
 
 void Grid::paint(void) const
 {
-    m_material->glSetMaterial();
+    // m_material->glSetMaterial();
     glBegin(GL_QUADS);
     for (int i = 0; i < m_nx; ++i)
     {
@@ -96,6 +96,7 @@ void Grid::paint(void) const
             {
                 if (m_voxel_objects[i][j][k].size() != 0)
                 {
+                    cell_materials[std::min((int)m_voxel_objects[i][j][k].size(), RayTree::color_gradient_num) - 1]->glSetMaterial();
                     Vec3f center = getVoxelCenter(i, j, k);
                     Vec3f normal;
                     Vec3f p1, p2, p3, p4;

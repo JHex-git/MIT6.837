@@ -1,11 +1,10 @@
+#include <GL/gl.h>
 #include "object3ds/triangle.h"
 #include "object3ds/boundingbox.h"
-#include "utility/matrix.h"
-#include <GL/gl.h>
+#include "object3ds/grid.h"
 
 namespace object3ds
 {
-using utility::Matrix;
 
 Triangle::Triangle(const Vec3f &a, const Vec3f &b, const Vec3f &c, Material* material) : 
     Object3D(material), m_point_a(a), m_point_b(b), m_point_c(c) 
@@ -74,5 +73,38 @@ void Triangle::paint(void) const
     glVertex3f(m_point_c.x(), m_point_c.y(), m_point_c.z());
     glEnd();
 }
+
+void Triangle::insertIntoGrid(Grid *g, Matrix *m)
+{
+    constexpr float epsilon = 0.0001;
+
+    // When the bounding box is on the edge of a voxel, the voxel will be missed, so extra epsilon is needed.
+    auto min_index = g->getVoxelIndex(m_bounding_box->getMin() - Vec3f(epsilon, epsilon, epsilon));
+    for (int i = 0; i < min_index.size(); ++i)
+    {
+        min_index[i] = std::max(min_index[i], 0);
+    }
+
+    // When the bounding box is on the edge of a voxel, the voxel will be missed, so extra voxels are needed.
+    auto max_index = g->getVoxelIndex(m_bounding_box->getMax() + Vec3f(epsilon, epsilon, epsilon));
+    auto voxel_num = g->getVoxelNum();
+    for (int i = 0; i < max_index.size(); ++i)
+    {
+        max_index[i] = max_index[i] == -1 ? voxel_num[i] - 1 : max_index[i];
+    }
+
+    for (int i = min_index[0]; i <= max_index[0]; i++)
+    {
+        for (int j = min_index[1]; j <= max_index[1]; j++)
+        {
+            for (int k = min_index[2]; k <= max_index[2]; k++)
+            {
+                // TODO: potential bug: repeated insertion
+                g->addObjectToVoxel(i, j, k, std::shared_ptr<Object3D>(this));
+            }
+        }
+    }
+}
+
 
 } // namespace object3ds

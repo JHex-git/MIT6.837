@@ -114,7 +114,7 @@ void Sphere::insertIntoGrid(Grid *g, Matrix *m)
     {
         for (int j = min_index[1]; j <= max_index[1]; j++)
         {
-            for (int k = 0; k <= max_index[2]; k++)
+            for (int k = min_index[2]; k <= max_index[2]; k++)
             {
                 auto voxel_center = g->getVoxelCenter(i, j, k);
                 if ((voxel_center - m_center).Length() <= m_radius + half_diagonal_length)
