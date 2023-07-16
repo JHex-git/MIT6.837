@@ -5,6 +5,11 @@
 #include "materials/material.h"
 #include <memory>
 
+namespace utility
+{
+    class Matrix;
+}
+
 namespace object3ds
 {
 class BoundingBox;
@@ -13,6 +18,7 @@ class Grid;
 using raytrace::Ray;
 using raytrace::Hit;
 using materials::Material;
+using utility::Matrix;
 
 class Object3D
 {
