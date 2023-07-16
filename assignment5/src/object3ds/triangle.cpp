@@ -2,6 +2,7 @@
 #include "object3ds/triangle.h"
 #include "object3ds/boundingbox.h"
 #include "object3ds/grid.h"
+#include "utility/matrix.h"
 
 namespace object3ds
 {
@@ -72,6 +73,53 @@ void Triangle::paint(void) const
     glVertex3f(m_point_b.x(), m_point_b.y(), m_point_b.z());
     glVertex3f(m_point_c.x(), m_point_c.y(), m_point_c.z());
     glEnd();
+}
+
+void Triangle::insertIntoGrid(Grid *g, Matrix *m)
+{
+    // use bounding box to determine if the triangle is in the grid
+    if (m == nullptr) 
+    {
+        Object3D::insertIntoGrid(g, m);
+        return;
+    }
+
+    auto p1 = m_point_a;
+    auto p2 = m_point_b;
+    auto p3 = m_point_c;
+    m->Transform(p1);
+    m->Transform(p2);
+    m->Transform(p3);
+    Vec3f min(std::min(p1.x(), std::min(p2.x(), p3.x())), std::min(p1.y(), std::min(p2.y(), p3.y())), std::min(p1.z(), std::min(p2.z(), p3.z())));
+    Vec3f max(std::max(p1.x(), std::max(p2.x(), p3.x())), std::max(p1.y(), std::max(p2.y(), p3.y())), std::max(p1.z(), std::max(p2.z(), p3.z())));
+    
+    constexpr float epsilon = 0.0001;
+    // When the bounding box is on the edge of a voxel, the voxel will be missed, so extra epsilon is needed.
+    auto min_index = g->getVoxelIndex(min - Vec3f(epsilon, epsilon, epsilon));
+    for (int i = 0; i < min_index.size(); ++i)
+    {
+        min_index[i] = std::max(min_index[i], 0);
+    }
+
+    // When the bounding box is on the edge of a voxel, the voxel will be missed, so extra voxels are needed.
+    auto max_index = g->getVoxelIndex(max + Vec3f(epsilon, epsilon, epsilon));
+    auto voxel_num = g->getVoxelNum();
+    for (int i = 0; i < max_index.size(); ++i)
+    {
+        max_index[i] = max_index[i] == -1 ? voxel_num[i] - 1 : max_index[i];
+    }
+
+    for (int i = min_index[0]; i <= max_index[0]; i++)
+    {
+        for (int j = min_index[1]; j <= max_index[1]; j++)
+        {
+            for (int k = min_index[2]; k <= max_index[2]; k++)
+            {
+                // TODO: potential bug: repeated insertion
+                g->addObjectToVoxel(i, j, k, std::shared_ptr<Object3D>(this));
+            }
+        }
+    }
 }
 
 } // namespace object3ds
