@@ -119,7 +119,8 @@ void Sphere::insertIntoGrid(Grid *g, Matrix *m)
                 auto voxel_center = g->getVoxelCenter(i, j, k);
                 if ((voxel_center - m_center).Length() <= m_radius + half_diagonal_length)
                 {
-                    g->setVoxel(i, j, k, true);
+                    // TODO: potential bug: repeated insertion
+                    g->addObjectToVoxel(i, j, k, std::shared_ptr<Object3D>(this));
                 }
             }
         }

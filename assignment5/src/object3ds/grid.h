@@ -2,6 +2,7 @@
 #define _GRID_H_
 #include "object3ds/object3d.h"
 #include "raytrace/marching_info.h"
+#include "raytrace/rayTree.h"
 #include <vector>
 
 namespace utility
@@ -13,18 +14,18 @@ namespace object3ds
 {
 using utility::Vec3f;
 using raytrace::MarchingInfo;
+using raytrace::RayTree;
 
 class Grid: public Object3D
 {
 public:
     Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz);
-    ~Grid() override { delete m_material; }
+    ~Grid();
     
     bool intersect(const Ray &r, Hit &h, float tmin) override;
     void paint(void) const override;
 
-    inline bool getVoxel(int x, int y, int z) const { return m_voxels[x][y][z]; }
-    inline void setVoxel(int x, int y, int z, bool opaque) { m_voxels[x][y][z] = opaque; }
+    inline void addObjectToVoxel(int x, int y, int z, std::shared_ptr<Object3D> obj) { m_voxel_objects[x][y][z].push_back(obj); }
     inline float getVoxelDiagonalLength() const { return std::sqrt(m_dx * m_dx + m_dy * m_dy + m_dz * m_dz); }
     Vec3f getVoxelCenter(int x, int y, int z) const;
     // for pointer outside the bounding box, return (-1, -1, -1)
@@ -38,8 +39,10 @@ private:
 
     int m_nx, m_ny, m_nz;
     float m_dx, m_dy, m_dz;
-    std::vector<std::vector<std::vector<bool>>> m_voxels; // true if occupied
+    std::vector<std::vector<std::vector<std::vector<std::shared_ptr<Object3D>>>>> m_voxel_objects;
     MarchingInfo m_mi;
+
+    Material* cell_materials[RayTree::color_gradient_num];
 };
 } // namespace object3ds
 

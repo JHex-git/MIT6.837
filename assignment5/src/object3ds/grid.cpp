@@ -1,7 +1,6 @@
 #include "object3ds/grid.h"
 #include "object3ds/boundingbox.h"
 #include "utility/vectors.h"
-#include "raytrace/rayTree.h"
 #include "materials/phong_material.h"
 #include <GL/gl.h>
 
@@ -11,7 +10,9 @@ using raytrace::RayTree;
 
 constexpr float epsilon = 0.001f;
 
-Grid::Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz) : m_nx(nx), m_ny(ny), m_nz(nz), m_voxels(nx, std::vector<std::vector<bool>>(ny, std::vector<bool>(nz, false)))
+Grid::Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz) : m_nx(nx), m_ny(ny), m_nz(nz), 
+            m_voxel_objects(nx, std::vector<std::vector<std::vector<std::shared_ptr<Object3D>>>>(
+                ny, std::vector<std::vector<std::shared_ptr<Object3D>>>(nz, std::vector<std::shared_ptr<Object3D>>())))
 {
     m_bounding_box = bb;
     Vec3f min = m_bounding_box->getMin();
@@ -21,6 +22,20 @@ Grid::Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz) : m_nx(nx), 
     m_dy = diff.y() / m_ny;
     m_dz = diff.z() / m_nz;
     m_material = new materials::PhongMaterial(Vec3f(1, 1, 1), Vec3f(0, 0, 0), 1, Vec3f(1, 1, 1), Vec3f(1, 1, 1), 1);
+
+    for (int i = 0; i < RayTree::color_gradient_num; ++i)
+    {
+        cell_materials[i] = new materials::PhongMaterial(RayTree::color_gradient[i], Vec3f(0, 0, 0), 1, Vec3f(1, 1, 1), Vec3f(1, 1, 1), 1);
+    }
+}
+
+Grid::~Grid()
+{
+    delete m_material;
+    for (int i = 0; i < RayTree::color_gradient_num; ++i)
+    {
+        delete cell_materials[i];
+    }
 }
 
 bool Grid::intersect(const Ray &r, Hit &h, float tmin)
@@ -28,39 +43,42 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
     initializeRayMarch(m_mi, r, tmin);
     auto voxel_index = m_mi.getVoxelIndex();
     bool b_first_hit = false;
+    int face_material_index = 0;
     while (voxel_index[0] > -1 && voxel_index[1] > -1 && voxel_index[2] > -1 && voxel_index[0] < m_nx && voxel_index[1] < m_ny && voxel_index[2] < m_nz)
     {
+        Material* face_material = cell_materials[face_material_index];
         Vec3f normal = m_mi.getCrossFaceNormal();
         auto enter_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        RayTree::AddEnteredFace(enter_face_points[0], enter_face_points[1], enter_face_points[2], enter_face_points[3], normal, m_material);
+        RayTree::AddEnteredFace(enter_face_points[0], enter_face_points[1], enter_face_points[2], enter_face_points[3], normal, face_material);
 
         normal = Vec3f(1, 0, 0);
         auto hit_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, m_material);
+        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, face_material);
         normal = Vec3f(-1, 0, 0);
         hit_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, m_material);
+        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, face_material);
         normal = Vec3f(0, 1, 0);
         hit_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, m_material);
+        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, face_material);
         normal = Vec3f(0, -1, 0);
         hit_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, m_material);
+        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, face_material);
         normal = Vec3f(0, 0, 1);
         hit_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, m_material);
+        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, face_material);
         normal = Vec3f(0, 0, -1);
         hit_face_points = getFacePoints(voxel_index[0], voxel_index[1], voxel_index[2], normal);
-        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, m_material);
+        RayTree::AddHitCellFace(hit_face_points[0], hit_face_points[1], hit_face_points[2], hit_face_points[3], normal, face_material);
         
         normal = m_mi.getCrossFaceNormal();
-        if (m_voxels[voxel_index[0]][voxel_index[1]][voxel_index[2]] && !b_first_hit)
+        if (m_voxel_objects[voxel_index[0]][voxel_index[1]][voxel_index[2]].size() != 0 && !b_first_hit)
         {
             b_first_hit = true;
             h.set(m_mi.getTmin(), m_material, normal, r);
         }
         m_mi.nextCell();
         voxel_index = m_mi.getVoxelIndex();
+        face_material_index = (face_material_index + 1) % RayTree::color_gradient_num;
     }
 
     return b_first_hit;
@@ -76,7 +94,7 @@ void Grid::paint(void) const
         {
             for (int k = 0; k < m_nz; ++k)
             {
-                if (m_voxels[i][j][k])
+                if (m_voxel_objects[i][j][k].size() != 0)
                 {
                     Vec3f center = getVoxelCenter(i, j, k);
                     Vec3f normal;

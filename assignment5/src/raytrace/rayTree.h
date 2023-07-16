@@ -227,14 +227,19 @@ public:
     if (!activated) return;
     entered_faces.addCellFace(CellFace(a,b,c,d,normal,m)); }
 
+
   static void paint();
   static void paintHitCells();
   static void paintEnteredFaces();
   static void Print();
 
+  constexpr static int color_gradient_num = 16;
+  static Vec3f color_gradient[color_gradient_num];
+  
 private:
   
   // HELPER FUNCTIONS
+  static Vec3f HSL2RGB(Vec3f hsl);
   static void paintHelper(const Vec4f &m,const Vec4f &s,const Vec4f &r,const Vec4f &t,const Vec4f &n);
   static void Clear() {
     main_segment.Clear();
@@ -256,6 +261,7 @@ private:
 
   static CellFaceVector hit_cells;
   static CellFaceVector entered_faces;
+
 };
 
 // ====================================================================
