@@ -74,7 +74,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
         if (m_voxel_objects[voxel_index[0]][voxel_index[1]][voxel_index[2]].size() != 0 && !b_first_hit)
         {
             b_first_hit = true;
-            h.set(m_mi.getTmin(), m_material, normal, r);
+            h.set(m_mi.getTmin(), cell_materials[std::min((int)m_voxel_objects[voxel_index[0]][voxel_index[1]][voxel_index[2]].size(), RayTree::color_gradient_num) - 1], normal, r);
         }
         m_mi.nextCell();
         voxel_index = m_mi.getVoxelIndex();
