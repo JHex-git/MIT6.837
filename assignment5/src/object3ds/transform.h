@@ -16,8 +16,10 @@ public:
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
     void paint(void) const override;
+    void insertIntoGrid(Grid *g, Matrix *m) override;
 
 private:
+    Matrix m_matTransform;
     Matrix m_matWS2OS;
     Matrix m_mat_normalWS2OS;
     Object3D* m_object;

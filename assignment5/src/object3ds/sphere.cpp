@@ -2,6 +2,7 @@
 #include "object3ds/sphere.h"
 #include "object3ds/boundingbox.h"
 #include "object3ds/grid.h"
+#include "utility/matrix.h"
 
 namespace object3ds
 {
@@ -93,6 +94,13 @@ void Sphere::paint(void) const
 
 void Sphere::insertIntoGrid(Grid *g, Matrix *m)
 {
+    // Don't need to handle transformations in sphere, fall back to Object3D::insertIntoGrid
+    if (m != nullptr)
+    {
+        Object3D::insertIntoGrid(g,m);
+        return;
+    }
+
     float half_diagonal_length = g->getVoxelDiagonalLength() / 2.0;
 
     // When the bounding box is on the edge of a voxel, the voxel will be missed, so extra epsilon is needed.

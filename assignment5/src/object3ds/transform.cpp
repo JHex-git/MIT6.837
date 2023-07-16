@@ -7,7 +7,7 @@ namespace object3ds
 using utility::Vec3f;
 
 
-Transform::Transform(const Matrix &mat, Object3D* object) : m_matWS2OS(mat), m_object(object) 
+Transform::Transform(const Matrix &mat, Object3D* object) : m_matTransform(mat), m_matWS2OS(mat), m_object(object) 
 {
     Vec3f min = m_object->getBoundingBox()->getMin();
     Vec3f max = m_object->getBoundingBox()->getMax();
@@ -23,7 +23,7 @@ Transform::Transform(const Matrix &mat, Object3D* object) : m_matWS2OS(mat), m_o
     v[7] = Vec3f(max.x(), max.y(), max.z());
     for (int i = 0; i < 8; i++)
     {
-        m_matWS2OS.Transform(v[i]);
+        m_matTransform.Transform(v[i]);
     }
     // get axis-aligned bounding box
     min = max = v[0];
@@ -70,12 +70,17 @@ bool Transform::intersect(const Ray &r, Hit &h, float tmin)
 void Transform::paint(void) const
 {
     glPushMatrix();
-    Matrix mat = m_matWS2OS;
-    mat.Inverse();
-    GLfloat *glMatrix = mat.glGet();
+    GLfloat *glMatrix = m_matTransform.glGet();
     glMultMatrixf(glMatrix);
     delete[] glMatrix;
     m_object->paint();
     glPopMatrix();
+}
+
+void Transform::insertIntoGrid(Grid *g, Matrix *m)
+{
+    Matrix mat = m_matTransform;
+    if (m != nullptr) mat = (*m) * mat;
+    m_object->insertIntoGrid(g, &mat);
 }
 } // namespace object3ds
