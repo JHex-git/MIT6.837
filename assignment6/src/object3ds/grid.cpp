@@ -353,6 +353,7 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
     Vec3f start_point = r.getOrigin() + tmin * r.getDirection();
 
     Vec3f start_point_in_bb;
+    Vec3f normal(-2, -2, -2);
     Hit hit;
     if (start_point.x() < min.x() || start_point.x() > max.x() || start_point.y() < min.y() || 
         start_point.y() > max.y() || start_point.z() < min.z() || start_point.z() > max.z()) // outside the bounding box
@@ -360,6 +361,7 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
         if (intersectBox(r, hit, min, max, tmin))
         {
             start_point_in_bb = r.pointAtParameter(hit.getT());
+            normal = hit.getNormal();
         }
         else
         {
@@ -381,7 +383,9 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
         if (intersectBox(r, hit, min, max, tmin))
         {
             mi.setVoxelIndex(start_point_index[0], start_point_index[1], start_point_index[2]);
-            mi.setCrossFaceNormal(hit.getNormal());
+            // When a ray hit the edge of a voxel, it cannot judge the normal from which face, so use normal of grid instead
+            if (normal != Vec3f(-2, -2, -2)) mi.setCrossFaceNormal(normal);
+            else mi.setCrossFaceNormal(hit.getNormal());
             float t = hit.getT();
             Vec3f intersection = r.pointAtParameter(t);
             int sign_x = r.getDirection().x() >= 0 ? 1 : -1;
