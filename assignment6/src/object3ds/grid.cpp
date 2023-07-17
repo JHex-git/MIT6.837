@@ -44,6 +44,7 @@ Grid::~Grid()
 
 bool Grid::intersect(const Ray &r, Hit &h, float tmin)
 {
+    constexpr float epsilon = 0.0001f;
     initializeRayMarch(m_mi, r, tmin);
     auto voxel_index = m_mi.getVoxelIndex();
     if (m_visualize_grid)
@@ -101,20 +102,22 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
                 auto objects = m_voxel_objects[voxel_index[0]][voxel_index[1]][voxel_index[2]];
                 float min = m_mi.getTmin();
                 float max = m_mi.getNextTmin();
+                bool intersect_with_object = false;
                 for (auto obj : objects)
                 {
                     Hit temp_hit;
                     if (obj->intersect(r, temp_hit, tmin))
                     {
                         float t = temp_hit.getT();
-                        if (t > min && t < max)
+                        if (t >= min - epsilon && t <= max + epsilon)
                         {
                             h = temp_hit;
                             max = t; // preserve the closest intersection
+                            intersect_with_object = true;
                         }
                     }
                 }
-                if (max != m_mi.getNextTmin())
+                if (intersect_with_object)
                 {
                     return true;
                 }
