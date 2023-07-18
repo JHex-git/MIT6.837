@@ -2,6 +2,7 @@
 #include "object3ds/triangle.h"
 #include "object3ds/boundingbox.h"
 #include "object3ds/grid.h"
+#include "object3ds/transform.h"
 #include "raytrace/raytracing_stats.h"
 #include "utility/matrix.h"
 
@@ -112,6 +113,7 @@ void Triangle::insertIntoGrid(Grid *g, Matrix *m)
         max_index[i] = max_index[i] == -1 ? voxel_num[i] - 1 : max_index[i];
     }
 
+    std::shared_ptr<Object3D> transform_ptr = std::make_shared<Transform>(*m, this);
     for (int i = min_index[0]; i <= max_index[0]; i++)
     {
         for (int j = min_index[1]; j <= max_index[1]; j++)
@@ -119,7 +121,7 @@ void Triangle::insertIntoGrid(Grid *g, Matrix *m)
             for (int k = min_index[2]; k <= max_index[2]; k++)
             {
                 // TODO: potential bug: repeated insertion
-                g->addObjectToVoxel(i, j, k, std::shared_ptr<Object3D>(this));
+                g->addObjectToVoxel(i, j, k, transform_ptr);
             }
         }
     }

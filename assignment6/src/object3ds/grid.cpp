@@ -114,7 +114,6 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
         while (voxel_index[0] > -1 && voxel_index[1] > -1 && voxel_index[2] > -1 && voxel_index[0] < m_nx && voxel_index[1] < m_ny && voxel_index[2] < m_nz)
         {
             RayTracingStats::IncrementNumGridCellsTraversed();
-            Vec3f normal = m_mi.getCrossFaceNormal();
 
             if (m_voxel_objects[voxel_index[0]][voxel_index[1]][voxel_index[2]].size() != 0)
             {
@@ -155,7 +154,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
             m_mi.nextCell();
             voxel_index = m_mi.getVoxelIndex();
         }
-        
+
         if (non_voxel_intersect)
         {
             h = non_voxel_hit;
