@@ -27,6 +27,7 @@ public:
 
     inline void addObjectToVoxel(int x, int y, int z, std::shared_ptr<Object3D> obj) { m_voxel_objects[x][y][z].push_back(obj); }
     inline const std::vector<std::shared_ptr<Object3D>>& getObjectsInVoxel(int x, int y, int z) const { return m_voxel_objects[x][y][z]; }
+    inline void addNonVoxelObject(std::shared_ptr<Object3D> obj) { m_non_voxel_objects.push_back(obj); }
     
     inline float getVoxelDiagonalLength() const { return std::sqrt(m_dx * m_dx + m_dy * m_dy + m_dz * m_dz); }
     Vec3f getVoxelCenter(int x, int y, int z) const;
@@ -43,6 +44,7 @@ private:
     float m_dx, m_dy, m_dz;
     bool m_visualize_grid;
     std::vector<std::vector<std::vector<std::vector<std::shared_ptr<Object3D>>>>> m_voxel_objects;
+    std::vector<std::shared_ptr<Object3D>> m_non_voxel_objects;
     MarchingInfo m_mi;
 
     Material* cell_materials[RayTree::color_gradient_num];

@@ -1,4 +1,5 @@
 #include "object3ds/plane.h"
+#include "object3ds/grid.h"
 #include "raytrace/raytracing_stats.h"
 #include <GL/gl.h>
 
@@ -40,5 +41,10 @@ void Plane::paint(void) const
     glVertex3f(p[0] - b1[0] * 10000 - b2[0] * 10000, p[1] - b1[1] * 10000 - b2[1] * 10000, p[2] - b1[2] * 10000 - b2[2] * 10000);
     glVertex3f(p[0] - b1[0] * 10000 + b2[0] * 10000, p[1] - b1[1] * 10000 + b2[1] * 10000, p[2] - b1[2] * 10000 + b2[2] * 10000);
     glEnd();
+}
+
+void Plane::insertIntoGrid(Grid *g, Matrix *m)
+{
+    g->addNonVoxelObject(std::shared_ptr<Object3D>(this));
 }
 } // namespace object3ds

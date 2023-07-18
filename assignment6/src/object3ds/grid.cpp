@@ -92,6 +92,25 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
     }
     else
     {
+        Hit temp_non_voxel_hit;
+        Hit non_voxel_hit;
+        bool non_voxel_intersect = false;
+        float current_non_voxel_tmin = std::numeric_limits<float>::max();
+        for (auto obj : m_non_voxel_objects)
+        {
+            if (obj->intersect(r, temp_non_voxel_hit, tmin))
+            {
+                float t = temp_non_voxel_hit.getT();
+                if (t < current_non_voxel_tmin)
+                {
+                    non_voxel_hit = temp_non_voxel_hit;
+                    current_non_voxel_tmin = t;
+                    non_voxel_intersect = true;
+                }
+            }
+        }
+
+        Hit temp_hit;
         while (voxel_index[0] > -1 && voxel_index[1] > -1 && voxel_index[2] > -1 && voxel_index[0] < m_nx && voxel_index[1] < m_ny && voxel_index[2] < m_nz)
         {
             RayTracingStats::IncrementNumGridCellsTraversed();
@@ -101,11 +120,17 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
             {
                 auto objects = m_voxel_objects[voxel_index[0]][voxel_index[1]][voxel_index[2]];
                 float min = m_mi.getTmin();
+
+                if (min > current_non_voxel_tmin)
+                {
+                    h = non_voxel_hit;
+                    return true;
+                }
+
                 float max = m_mi.getNextTmin();
                 bool intersect_with_object = false;
                 for (auto obj : objects)
                 {
-                    Hit temp_hit;
                     if (obj->intersect(r, temp_hit, min))
                     {
                         float t = temp_hit.getT();
@@ -117,13 +142,24 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
                         }
                     }
                 }
-                if (intersect_with_object)
+                if (intersect_with_object && max < current_non_voxel_tmin) // intersection with objects in voxel is closer than non-voxel objects
                 {
+                    return true;
+                }
+                else if (intersect_with_object && max > current_non_voxel_tmin) // intersection with non-voxel objects is closer than objects in voxel
+                {
+                    h = non_voxel_hit;
                     return true;
                 }
             }
             m_mi.nextCell();
             voxel_index = m_mi.getVoxelIndex();
+        }
+        
+        if (non_voxel_intersect)
+        {
+            h = non_voxel_hit;
+            return true;
         }
     }
 
