@@ -130,7 +130,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
                 bool intersect_with_object = false;
                 for (auto obj : objects)
                 {
-                    if (obj->intersect(r, temp_hit, min))
+                    if (obj->intersect(r, temp_hit, min - epsilon))
                     {
                         float t = temp_hit.getT();
                         if (t >= min - epsilon && t <= max + epsilon)
