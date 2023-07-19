@@ -59,7 +59,9 @@ bool Triangle::intersect(const Ray &r, Hit &h, float tmin)
     if (gamma < 0|| beta + gamma > 1)
         return false;
     
-    h.set(t, m_material, m_normal, r);
+    Vec3f normal = m_normal;
+    if (r.getDirection().Dot3(normal) > 0) normal.Negate();
+    h.set(t, m_material, normal, r);
     return true;
 }
 

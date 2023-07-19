@@ -12,7 +12,7 @@ using raytrace::RayTree;
 using raytrace::RayTracingStats;
 using opengl::GLCanvas;
 
-constexpr float epsilon = 0.001f;
+constexpr float epsilon = 0.0001f;
 
 Grid::Grid(std::shared_ptr<BoundingBox> bb, int nx, int ny, int nz, bool visualize_grid) : m_nx(nx), m_ny(ny), m_nz(nz), 
             m_voxel_objects(nx, std::vector<std::vector<std::vector<std::shared_ptr<Object3D>>>>(
@@ -44,7 +44,6 @@ Grid::~Grid()
 
 bool Grid::intersect(const Ray &r, Hit &h, float tmin)
 {
-    constexpr float epsilon = 0.0001f;
     initializeRayMarch(m_mi, r, tmin);
     auto voxel_index = m_mi.getVoxelIndex();
     if (m_visualize_grid)
@@ -425,14 +424,21 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
             if (normal != Vec3f(-2, -2, -2)) mi.setCrossFaceNormal(normal);
             else mi.setCrossFaceNormal(hit.getNormal());
             float t = hit.getT();
-            Vec3f intersection = r.pointAtParameter(t);
+
+            assert(intersectBox(r, hit, min, max, std::numeric_limits<float>::lowest()));
+            if (std::abs(hit.getT() - t) > epsilon) // ray starts in voxel
+            {
+                t = tmin + epsilon; // add extra epsilon to suppress intersect epsilon
+            }
+
+            Vec3f ray_start_point_in_voxel = r.pointAtParameter(t);
             int sign_x = r.getDirection().x() >= 0 ? 1 : -1;
             int sign_y = r.getDirection().y() >= 0 ? 1 : -1;
             int sign_z = r.getDirection().z() >= 0 ? 1 : -1;
             mi.setSign(sign_x, sign_y, sign_z);
 
-            Vec3f offset_min = intersection - min;
-            Vec3f offset_max = max - intersection;
+            Vec3f offset_min = ray_start_point_in_voxel - min;
+            Vec3f offset_max = max - ray_start_point_in_voxel;
             float t_delta_x = sign_x == 1 ? offset_max.x() : offset_min.x();
             t_delta_x /= std::abs(r.getDirection().x());
             float t_delta_y = sign_y == 1 ? offset_max.y() : offset_min.y();
@@ -440,13 +446,11 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
             float t_delta_z = sign_z == 1 ? offset_max.z() : offset_min.z();
             t_delta_z /= std::abs(r.getDirection().z());
             mi.setNextT(t + t_delta_x, t + t_delta_y, t + t_delta_z);
-
+            mi.setTmin(t);
             t_delta_x = m_dx / std::abs(r.getDirection().x());
             t_delta_y = m_dy / std::abs(r.getDirection().y());
             t_delta_z = m_dz / std::abs(r.getDirection().z());
             mi.setDeltaT(t_delta_x, t_delta_y, t_delta_z);
-
-            mi.setTmin(t);
         }
         else
         {

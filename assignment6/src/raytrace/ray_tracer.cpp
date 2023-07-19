@@ -9,7 +9,7 @@
 
 namespace raytrace
 {
-constexpr float epsilon = 0.001f;
+constexpr float epsilon = 0.0001f;
 
 RayTracer::RayTracer(std::shared_ptr<SceneParser> s, int max_bounces, float cutoff_weight, 
                         bool shadows, bool shade_back, bool grid, int nx, int ny, int nz, bool visualize_grid)
