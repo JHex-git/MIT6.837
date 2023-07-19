@@ -16,11 +16,11 @@ void Group::addObject(int index, Object3D* obj)
     assert(m_objects[index] == nullptr);
 
     m_objects[index] = std::shared_ptr<Object3D>(obj);
-    if (m_bounding_box == nullptr) m_bounding_box = std::make_shared<BoundingBox>(m_objects[index]->getBoundingBox()->getMin(), m_objects[index]->getBoundingBox()->getMax());
+    auto bb = obj->getBoundingBox();
+    if (m_bounding_box == nullptr && bb != nullptr) m_bounding_box = std::make_shared<BoundingBox>(bb->getMin(), bb->getMax());
     else 
     {
-        BoundingBox* bb = m_objects[index]->getBoundingBox().get();
-        if (bb != nullptr) m_bounding_box->Extend(m_objects[index]->getBoundingBox().get());
+        if (bb != nullptr) m_bounding_box->Extend(bb.get());
     }
 }
 
