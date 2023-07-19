@@ -166,7 +166,6 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin)
 
 void Grid::paint(void) const
 {
-    // m_material->glSetMaterial();
     glBegin(GL_QUADS);
     for (int i = 0; i < m_nx; ++i)
     {

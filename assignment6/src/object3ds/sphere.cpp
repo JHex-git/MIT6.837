@@ -9,8 +9,8 @@ namespace object3ds
 {
 using raytrace::RayTracingStats;
 
-int Sphere::theta_steps = 1;
-int Sphere::phi_steps = 1;
+int Sphere::theta_steps = 25;
+int Sphere::phi_steps = 25;
 bool Sphere::gouraud = false;
 constexpr float epsilon = 0.001f;
 
