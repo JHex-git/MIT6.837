@@ -145,20 +145,22 @@ void Render()
     Image result(width, height);
     Image depth_img(width, height);
     Image normal_img(width, height);
-    int size = std::min(width, height);
+    int size = std::max(width, height);
+    int i_begin = width < height ? (size - width) / 2 : 0;
+    int j_begin = width > height ? (size - height) / 2 : 0;
     result.SetAllPixels(scene_parser->getBackgroundColor());
     if (depth_file != NULL) depth_img.SetAllPixels(Vec3f(0, 0, 0));
     if (normal_file != NULL) normal_img.SetAllPixels(Vec3f(0, 0, 0));
-    for (int i = 0; i < size; i++)
+    for (int i = i_begin; i < size - i_begin; i++)
     {
-        for (int j = 0; j < size; j++)
+        for (int j = j_begin; j < size - j_begin; j++)
         {
             auto ray = scene_parser->getCamera()->generateRay(Vec2f((float)i / (size - 1), (float)j / (size - 1)));
             Vec3f shade_color = ray_tracer->traceRay(ray, scene_parser->getCamera()->getTMin(), 0, 1, 1, hit); // camera always placed in air, not in object, so index of refraction is 1
             if (hit.getT() > scene_parser->getCamera()->getTMin()) // has intersect
             {
                 Vec3f normal = hit.getNormal();
-                result.SetPixel(i, j, shade_color);
+                result.SetPixel(i - i_begin, j - j_begin, shade_color);
 
                 if (depth_file != NULL) 
                 {
@@ -167,12 +169,12 @@ void Render()
                     depth = std::min(depth, depth_max);
                     depth = std::max(depth, depth_min);
                     depth = (depth_max - depth) / (depth_max - depth_min);
-                    depth_img.SetPixel(i, j, Vec3f(depth, depth, depth));
+                    depth_img.SetPixel(i, j - (size - height) / 2, Vec3f(depth, depth, depth));
                 }
                 if (normal_file != NULL)
                 {
                     Vec3f abs_normal = Vec3f(std::abs(normal.x()), std::abs(normal.y()), std::abs(normal.z()));
-                    normal_img.SetPixel(i, j, abs_normal);
+                    normal_img.SetPixel(i, j - (size - height) / 2, abs_normal);
                 }
             }
         }
