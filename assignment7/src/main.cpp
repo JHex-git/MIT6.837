@@ -210,7 +210,7 @@ void Render()
     int i_begin = width < height ? (size - width) / 2 : 0;
     int j_begin = width > height ? (size - height) / 2 : 0;
     int samples_per_pixel = sampler->getNumSamplesPerPixel();
-    float pixel_size = (float)1 / (size + 1);
+    float pixel_size = (float)1 / size;
 
     for (int i = i_begin; i < size - i_begin; i++)
     {
@@ -223,7 +223,7 @@ void Render()
                 ray_offset -= Vec2f(0.5, 0.5); // [-0.5, 0.5]
                 ray_offset *= pixel_size;
                 
-                auto ray = scene_parser->getCamera()->generateRay(Vec2f((i + 1) / (float)(size + 1) + ray_offset.x(), (j + 1) / (float)(size + 1) + ray_offset.y()));
+                auto ray = scene_parser->getCamera()->generateRay(Vec2f((i + 0.5) / size + ray_offset.x(), (j + 0.5) / size + ray_offset.y()));
                 Vec3f shade_color = ray_tracer->traceRay(ray, scene_parser->getCamera()->getTMin(), 0, 1, 1, hit); // camera always placed in air, not in object, so index of refraction is 1
                 if (hit.getT() > scene_parser->getCamera()->getTMin()) // has intersect
                 {
