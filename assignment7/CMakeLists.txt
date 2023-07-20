@@ -23,8 +23,9 @@ add_subdirectory(src/opengl)
 add_subdirectory(src/lights)
 add_subdirectory(src/materials)
 add_subdirectory(src/raytrace)
+add_subdirectory(src/samples)
 add_executable(raytracer src/main.cpp)
-target_link_libraries(raytracer raytrace_lib cameras_lib object3ds_lib utility_lib mygl_lib lights_lib materials_lib ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+target_link_libraries(raytracer raytrace_lib cameras_lib object3ds_lib utility_lib mygl_lib lights_lib materials_lib samples_lib ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
 
 MACRO (COPY_GNU_DLL trgt libname)
 ADD_CUSTOM_COMMAND (
