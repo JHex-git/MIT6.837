@@ -4,7 +4,6 @@
 namespace samples
 {
 
-
 Vec3f Filter::getColor(int i, int j, Film *film)
 {
     Vec3f color(0, 0, 0);
@@ -21,14 +20,14 @@ Vec3f Filter::getColor(int i, int j, Film *film)
 
 float BoxFilter::getWeight(float x, float y)
 {
-    return 1.f / (2 * getSupportRadius() + 1);
+    if (std::abs(x) > m_radius || std::abs(y) > m_radius) return 0;
+    return 1;
 }
 
 float TentFilter::getWeight(float x, float y)
 {
     float r = std::sqrt(x * x + y * y);
-    if (r > getSupportRadius()) return 0;
-    return 1 - r / getSupportRadius();
+    return std::max(1 - r / m_radius, 0.0f);
 }
 
 float GaussianFilter::getWeight(float x, float y)

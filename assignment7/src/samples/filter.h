@@ -15,7 +15,7 @@ using utility::Vec3f;
 class Filter
 {
 public:
-    Filter(int support_radius) : m_support_radius(support_radius) {}
+    Filter(float support_radius) : m_support_radius(support_radius + 0.49999) {}
 
     Vec3f getColor(int i, int j, Film *film);
 
@@ -31,17 +31,23 @@ private:
 class BoxFilter : public Filter
 {
 public:
-    BoxFilter(int support_radius) : Filter(support_radius) {}
+    BoxFilter(float radius) : Filter(radius), m_radius(radius) {}
 
     float getWeight(float x, float y) override;
+
+private:
+    float m_radius;
 };
 
 class TentFilter : public Filter
 {
 public:
-    TentFilter(int support_radius) : Filter(support_radius) {}
+    TentFilter(float radius) : Filter(radius), m_radius(radius) {}
 
     float getWeight(float x, float y) override;
+
+private:
+    float m_radius;
 };
 
 class GaussianFilter : public Filter
