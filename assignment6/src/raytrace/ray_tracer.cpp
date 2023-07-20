@@ -57,7 +57,7 @@ Vec3f RayTracer::traceRayGrid(const Ray &ray, float tmin, int bounces, float wei
         }
 
         Material* material = hit.getMaterial();
-        color = material->getDiffuseColor() * m_scene_parser->getAmbientLight();
+        color = material->getDiffuseColor(hit.getIntersectionPoint()) * m_scene_parser->getAmbientLight();
         for (int iLight = 0; iLight < m_scene_parser->getNumLights(); ++iLight)
         {
             Vec3f dirToLight;
@@ -113,7 +113,7 @@ Vec3f RayTracer::traceRayScene(const Ray &ray, float tmin, int bounces, float we
             }
         }
 
-        color = hit.getMaterial()->getDiffuseColor() * m_scene_parser->getAmbientLight();
+        color = hit.getMaterial()->getDiffuseColor(hit.getIntersectionPoint()) * m_scene_parser->getAmbientLight();
         for (int iLight = 0; iLight < m_scene_parser->getNumLights(); ++iLight)
         {
             Vec3f dirToLight;
@@ -140,7 +140,7 @@ Vec3f RayTracer::traceRayScene(const Ray &ray, float tmin, int bounces, float we
         Ray normal_ray(ray.pointAtParameter(hit.getT()), normal);
         RayTree::AddNormalSegment(normal_ray);
         
-        Vec3f reflective_color = hit.getMaterial()->getReflectiveColor();
+        Vec3f reflective_color = hit.getMaterial()->getReflectiveColor(hit.getIntersectionPoint());
         if (reflective_color != Vec3f(0, 0, 0))
         {
             Ray reflect_ray(ray.pointAtParameter(hit.getT()), mirrorDirection(normal, ray.getDirection()));
@@ -153,7 +153,7 @@ Vec3f RayTracer::traceRayScene(const Ray &ray, float tmin, int bounces, float we
             }
         }
 
-        Vec3f transparent_color = hit.getMaterial()->getTransparentColor();
+        Vec3f transparent_color = hit.getMaterial()->getTransparentColor(hit.getIntersectionPoint());
         if (transparent_color != Vec3f(0, 0, 0))
         {
             Vec3f transmitted_direction;
@@ -211,7 +211,7 @@ Vec3f RayTracer::traceRaySceneFast(const Ray &ray, float tmin, int bounces, floa
             }
         }
 
-        color = hit.getMaterial()->getDiffuseColor() * m_scene_parser->getAmbientLight();
+        color = hit.getMaterial()->getDiffuseColor(hit.getIntersectionPoint()) * m_scene_parser->getAmbientLight();
         for (int iLight = 0; iLight < m_scene_parser->getNumLights(); ++iLight)
         {
             Vec3f dirToLight;
@@ -237,7 +237,7 @@ Vec3f RayTracer::traceRaySceneFast(const Ray &ray, float tmin, int bounces, floa
         Ray normal_ray(ray.pointAtParameter(hit.getT()), normal);
         RayTree::AddNormalSegment(normal_ray);
         
-        Vec3f reflective_color = hit.getMaterial()->getReflectiveColor();
+        Vec3f reflective_color = hit.getMaterial()->getReflectiveColor(hit.getIntersectionPoint());
         if (reflective_color != Vec3f(0, 0, 0))
         {
             Ray reflect_ray(ray.pointAtParameter(hit.getT()), mirrorDirection(normal, ray.getDirection()));
@@ -250,7 +250,7 @@ Vec3f RayTracer::traceRaySceneFast(const Ray &ray, float tmin, int bounces, floa
             }
         }
 
-        Vec3f transparent_color = hit.getMaterial()->getTransparentColor();
+        Vec3f transparent_color = hit.getMaterial()->getTransparentColor(hit.getIntersectionPoint());
         if (transparent_color != Vec3f(0, 0, 0))
         {
             Vec3f transmitted_direction;

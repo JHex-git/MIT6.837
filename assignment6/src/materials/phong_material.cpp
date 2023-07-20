@@ -64,9 +64,9 @@ void PhongMaterial::glSetMaterial(void) const {
     m_specularColor.b(),
     1.0};
   GLfloat diffuse[4] = {
-    getDiffuseColor().r(),
-    getDiffuseColor().g(),
-    getDiffuseColor().b(),
+    m_diffuseColor.r(),
+    m_diffuseColor.g(),
+    m_diffuseColor.b(),
     1.0};
   
   // NOTE: GL uses the Blinn Torrance version of Phong...      
