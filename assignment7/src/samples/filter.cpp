@@ -11,7 +11,7 @@ Vec3f Filter::getColor(int i, int j, Film *film)
     for (int k = 0; k < film->getNumSamples(); ++k)
     {
         auto sample = film->getSample(i, j, k);
-        float weight = getWeight(sample.getPosition().x(), sample.getPosition().y());
+        float weight = getWeight(sample.getPosition().x() - 0.5, sample.getPosition().y() - 0.5);
         color += sample.getColor() * weight;
         weight_sum += weight;
     }
