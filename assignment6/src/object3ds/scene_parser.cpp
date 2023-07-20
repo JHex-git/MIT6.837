@@ -10,6 +10,7 @@
 #include "materials/checker_board.h"
 #include "materials/wood.h"
 #include "materials/marble.h"
+#include "materials/noise.h"
 #include "object3ds/object3d.h"
 #include "object3ds/group.h" 
 #include "object3ds/sphere.h"
@@ -37,6 +38,7 @@ using materials::PhongMaterial;
 using materials::CheckerBoard;
 using materials::Wood;
 using materials::Marble;
+using materials::Noise;
 
 SceneParser::SceneParser(const char* filename) {
 
@@ -344,9 +346,7 @@ Material *SceneParser::parseNoise(int count) {
   getToken(token); assert (!strcmp(token, "octaves"));
   int octaves = readInt();
   getToken(token); assert (!strcmp(token, "}"));
-  assert(false);
-  return nullptr;
-  // return new Noise(matrix,materials[m1],materials[m2],octaves);
+  return new Noise(matrix,materials[m1],materials[m2],octaves);
 }
 
 Material *SceneParser::parseMarble(int count) {

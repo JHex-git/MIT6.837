@@ -36,6 +36,25 @@ public:
                                      grad(p[BB+1], x-1, y-1, z-1 ))));
    }
 
+   static double octave_noise(double x, double y, double z, int octave) {
+    double noise = 0;
+    int power = 1;
+    // double normalize = 0;
+    for (int i = 0; i < octave; ++i)
+    {
+        noise += PerlinNoise::noise(x, y, z) / power;
+        // normalize += 1.0 / power;
+        power <<= 1;
+        x *= 2;
+        y *= 2;
+        z *= 2;
+    }
+
+    // normalize *= 0.866; // Three dimensional perlin_noise is in range [-0.866, 0.866]
+    // return noise / normalize / 2 + 0.5;
+    return noise;
+   }
+
 private:
    static double fade(double t) { 
      return t * t * t * (t * (t * 6 - 15) + 10); }

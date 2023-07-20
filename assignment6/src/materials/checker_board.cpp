@@ -16,9 +16,4 @@ Vec3f CheckerBoard::Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLigh
     else
         return m_material2->Shade(ray, hit, dirToLight, lightColor);
 }
-
-void CheckerBoard::glSetMaterial() const
-{
-    m_material1->glSetMaterial();
-}
 } // namespace materials
