@@ -27,6 +27,7 @@ public:
 
 protected:
   virtual Vec3f getCurvePointAtParam(float t) const = 0;
+  virtual int getControlPointsWindowNum() const = 0;
 
 };
 
@@ -37,11 +38,12 @@ public:
 
   void OutputBezier(FILE *file) override;
   void OutputBSpline(FILE *file) override;
-
+  
   static const Matrix& GetB() { return B_bezier; }
 
 protected:
   Vec3f getCurvePointAtParam(float t) const override;
+  int getControlPointsWindowNum() const override;;
   
 private:
   static float B_bezier_data[16];
@@ -60,6 +62,7 @@ public:
 
 protected:
   Vec3f getCurvePointAtParam(float t) const override;
+  int getControlPointsWindowNum() const override;
 
 private:
   static float B_bspline_data[16];
