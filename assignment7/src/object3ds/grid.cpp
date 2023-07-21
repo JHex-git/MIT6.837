@@ -451,11 +451,6 @@ void Grid::initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) const
             t_delta_z = m_dz / std::abs(r.getDirection().z());
             mi.setDeltaT(t_delta_x, t_delta_y, t_delta_z);
         }
-        else
-        {
-            // if a ray intersect with grid bounding box, then it must intersect with at least one voxel
-            assert(false);
-        }
     }
     
 }
