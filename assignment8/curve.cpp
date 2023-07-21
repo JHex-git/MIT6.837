@@ -55,6 +55,7 @@ Matrix BezierCurve::B_bezier(B_bezier_data);
 void BezierCurve::OutputBezier(FILE *file)
 {
     fprintf(file, "bezier\n");
+    fprintf(file, "num_vertices %d\n", m_vertices.size());
     for (int i = 0; i < m_vertices.size(); ++i)
     {
         fprintf(file, "%f %f %f\n", m_vertices[i].x(), m_vertices[i].y(), m_vertices[i].z());
@@ -79,6 +80,7 @@ void BezierCurve::OutputBSpline(FILE *file)
     G_bezier *= B_bspline;
 
     fprintf(file, "bspline\n");
+    fprintf(file, "num_vertices %d\n", m_vertices.size());
     for (int i = 0; i < 4; ++i)
     {
         fprintf(file, "%f %f %f\n", G_bezier.Get(i, 0), G_bezier.Get(i, 1), G_bezier.Get(i, 2));
@@ -117,6 +119,7 @@ void BSplineCurve::OutputBezier(FILE *file)
     G_bspline *= B_bezier;
 
     fprintf(file, "bezier\n");
+    fprintf(file, "num_vertices %d\n", m_vertices.size());
     for (int i = 0; i < 4; ++i)
     {
         fprintf(file, "%f %f %f\n", G_bspline.Get(i, 0), G_bspline.Get(i, 1), G_bspline.Get(i, 2));
@@ -126,6 +129,7 @@ void BSplineCurve::OutputBezier(FILE *file)
 void BSplineCurve::OutputBSpline(FILE *file)
 {
     fprintf(file, "bspline\n");
+    fprintf(file, "num_vertices %d\n", m_vertices.size());
     for (int i = 0; i < m_vertices.size(); ++i)
     {
         fprintf(file, "%f %f %f\n", m_vertices[i].x(), m_vertices[i].y(), m_vertices[i].z());
