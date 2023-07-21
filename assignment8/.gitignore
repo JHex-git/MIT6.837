@@ -1,0 +1,7 @@
+/*.txt
+!/CMakeLists.txt
+/*.html
+build
+.vscode
+/*.obj
+note.md
