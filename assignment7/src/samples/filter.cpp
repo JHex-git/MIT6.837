@@ -8,12 +8,18 @@ Vec3f Filter::getColor(int i, int j, Film *film)
 {
     Vec3f color(0, 0, 0);
     float weight_sum = 0;
-    for (int k = 0; k < film->getNumSamples(); ++k)
+    for (int u = std::max(0, i - m_support_radius); u <= i + m_support_radius && u < film->getWidth(); ++u)
     {
-        auto sample = film->getSample(i, j, k);
-        float weight = getWeight(sample.getPosition().x() - 0.5, sample.getPosition().y() - 0.5);
-        color += sample.getColor() * weight;
-        weight_sum += weight;
+        for (int v = std::max(0, j - m_support_radius); v <= j + m_support_radius && v < film->getHeight(); ++v)
+        {
+            for (int k = 0; k < film->getNumSamples(); ++k)
+            {
+                auto sample = film->getSample(u, v, k);
+                float weight = getWeight(sample.getPosition().x() - 0.5 + u - i, sample.getPosition().y() + v - j - 0.5);
+                color += sample.getColor() * weight;
+                weight_sum += weight;
+            }
+        }
     }
     return color * (1 / weight_sum);
 }

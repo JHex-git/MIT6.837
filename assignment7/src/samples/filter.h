@@ -21,7 +21,7 @@ public:
 
     int getSupportRadius() { return m_support_radius; }
 
-    // x and y are in the range [-0.5, 0.5]
+    // x and y are relative to (0, 0)
     virtual float getWeight(float x, float y) = 0;
 
 private:
