@@ -109,6 +109,25 @@ Vec3f BezierCurve::getCurvePointAtParam(float t) const
             + 3 * std::pow(t, 2) * (1 - t) * m_vertices[start_point_index + 2] + std::pow(t, 3) * m_vertices[start_point_index + 3];
 }
 
+void BezierCurve::addControlPoint(int selectedPoint, float x, float y)
+{
+    m_vertices.insert(m_vertices.begin() + selectedPoint, Vec3f(x + 0.1, y + 0.1, 0));
+    m_vertices.insert(m_vertices.begin() + selectedPoint, Vec3f(x, y, 0));
+    m_vertices.insert(m_vertices.begin() + selectedPoint, Vec3f(x - 0.1, y - 0.1, 0));
+}
+
+void BezierCurve::deleteControlPoint(int selectedPoint)
+{
+    if (m_vertices.size() >= 7)
+    {
+        m_vertices.erase(m_vertices.begin() + selectedPoint);
+        if (selectedPoint >= m_vertices.size()) selectedPoint--;
+        m_vertices.erase(m_vertices.begin() + selectedPoint);
+        if (selectedPoint >= m_vertices.size()) selectedPoint--;
+        m_vertices.erase(m_vertices.begin() + selectedPoint);
+    }
+}
+
 float BSplineCurve::B_bspline_data[16] = {
     -1.0/6.0, 3.0/6.0, -3.0/6.0, 1.0/6.0,
     3.0/6.0, -6.0/6.0, 0.0/6.0, 4.0/6.0,
@@ -174,4 +193,15 @@ Vec3f BSplineCurve::getCurvePointAtParam(float t) const
     float t_cube = t_square * t;
     return std::pow(1 - t, 3) / 6 * m_vertices[start_point_index] + (3 * t_cube - 6 * t_square + 4) / 6 * m_vertices[start_point_index + 1]
             + (-3 * t_cube + 3 * t_square + 3 * t + 1) / 6 * m_vertices[start_point_index + 2] + t_cube / 6 * m_vertices[start_point_index + 3];
+}
+
+void BSplineCurve::addControlPoint(int selectedPoint, float x, float y)
+{
+    m_vertices.insert(m_vertices.begin() + selectedPoint, Vec3f(x, y, 0));
+}
+
+void BSplineCurve::deleteControlPoint(int selectedPoint)
+{
+    if (m_vertices.size() > 4)
+        m_vertices.erase(m_vertices.begin() + selectedPoint);
 }

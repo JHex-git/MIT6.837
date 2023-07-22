@@ -34,10 +34,6 @@ public:
   void Output(FILE *file);
   
 protected:
-
-  // don't use this constructor
-  TriangleMesh() { assert(0); } 
-
   // REPRESENTATION
   int num_vertices;
   int num_triangles;
@@ -71,10 +67,6 @@ public:
     TriangleMesh::SetVertex(index,v); }
 
 private:
-
-  // don't use this constructor
-  TriangleNet() { assert(0); }
-
   // REPRESENTATION
   int u_tess;
   int v_tess;

@@ -18,9 +18,8 @@ public:
   virtual void OutputBSpline(FILE *file) override = 0;
 
   // // FOR EDITING OPERATIONS
-  // virtual void moveControlPoint(int selectedPoint, float x, float y) override { assert(false); }
-  // virtual void addControlPoint(int selectedPoint, float x, float y) override { assert(false); }
-  // virtual void deleteControlPoint(int selectedPoint) override { assert(false); }
+  virtual void addControlPoint(int selectedPoint, float x, float y) override = 0;
+  virtual void deleteControlPoint(int selectedPoint) override = 0;
 
   // // FOR GENERATING TRIANGLES
   // virtual TriangleMesh* OutputTriangles(ArgParser* args) override { assert(false); return nullptr; }
@@ -38,6 +37,10 @@ public:
 
   void OutputBezier(FILE *file) override;
   void OutputBSpline(FILE *file) override;
+
+  // // FOR EDITING OPERATIONS
+  void addControlPoint(int selectedPoint, float x, float y) override;
+  void deleteControlPoint(int selectedPoint) override;
   
   static const Matrix& GetB() { return B_bezier; }
 
@@ -59,6 +62,9 @@ public:
   void OutputBSpline(FILE *file) override;
 
   static const Matrix& GetB() { return B_bspline; }
+
+  void addControlPoint(int selectedPoint, float x, float y) override;
+  void deleteControlPoint(int selectedPoint) override;
 
 protected:
   Vec3f getCurvePointAtParam(float t) const override;

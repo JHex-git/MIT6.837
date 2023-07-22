@@ -181,8 +181,8 @@ void SplineParser::PickEdge(float x, float y, float epsilon,
       // selected_control_point-1 to selected_control_point
       // the index of the new point will be selected_control_point
       if (d < distance) {
-	selected_curve = s;
-	selected_control_point = j;
+        selected_curve = s;
+        selected_control_point = j;
       }
     }
   }
