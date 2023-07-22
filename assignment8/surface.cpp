@@ -1,11 +1,12 @@
 #include "surface.h"
 #include "curve.h"
 #include "arg_parser.h"
+#include <GL/gl.h>
 #include <cmath>
 
 void SurfaceOfRevolution::Paint(ArgParser *args)
 {
-    m_curve->Paint(args);   
+    m_curve->Paint(args);
 }
 
 SurfaceOfRevolution::SurfaceOfRevolution(Curve* c) : m_curve(c) {}
@@ -26,10 +27,6 @@ TriangleMesh* SurfaceOfRevolution::OutputTriangles(ArgParser* args)
         }
         theta += delta_radian;
     }
-
-    FILE* file = fopen(args->output_file, "w");
-    triangles->Output(file);
-    fclose(file);
 
     return triangles;
 }
@@ -53,11 +50,67 @@ Vec3f BezierPatch::CurveBezier(const Vec3f& p0, const Vec3f& p1, const Vec3f& p2
             + 3 * std::pow(alpha, 2) * (1 - alpha) * p2 + std::pow(alpha, 3) * p3;
 }
 
-Vec3f BezierPatch::getSurfacePointAtParam(float s, float t) const
+Vec3f BezierPatch::getSurfacePointAtParam(float t, float s) const
 {
-    return CurveBezier(CurveBezier(getVertex(0), getVertex(1), getVertex(2), getVertex(3), s),
-                       CurveBezier(getVertex(4), getVertex(5), getVertex(6), getVertex(7), s),
-                       CurveBezier(getVertex(8), getVertex(9), getVertex(10), getVertex(11), s),
-                       CurveBezier(getVertex(12), getVertex(13), getVertex(14), getVertex(15), s), t);
+    return CurveBezier(CurveBezier(getVertex(0), getVertex(1), getVertex(2), getVertex(3), t),
+                       CurveBezier(getVertex(4), getVertex(5), getVertex(6), getVertex(7), t),
+                       CurveBezier(getVertex(8), getVertex(9), getVertex(10), getVertex(11), t),
+                       CurveBezier(getVertex(12), getVertex(13), getVertex(14), getVertex(15), t), s);
 }
 
+void BezierPatch::Paint(ArgParser *args)
+{
+    assert(m_vertices.size() == 16);
+
+    // draw the control polygon
+    glLineWidth(1);
+    glColor3b(0, 0, 127);
+    glBegin(GL_LINES);
+    for (int i = 0; i <= 12; i += 4) {
+        {
+            for (int j = i; j < i + 3; ++j)
+            {
+                Vec3f v1 = getVertex(j);
+                Vec3f v2 = getVertex(j + 1);
+                glVertex2f(v1.x(), v1.y());
+                glVertex2f(v2.x(), v2.y());
+            }
+        }
+    }
+    for (int i = 0; i <= 8; i += 4) {
+        {
+            for (int j = i; j < i + 4; ++j)
+            {
+                Vec3f v1 = getVertex(j);
+                Vec3f v2 = getVertex(j + 4);
+                glVertex2f(v1.x(), v1.y());
+                glVertex2f(v2.x(), v2.y());
+            }
+        }
+    }
+    glEnd();
+
+    // draw the control points
+    glPointSize(5);
+    glColor3b(127, 0, 0);
+    for (int i = 0; i < m_vertices.size(); i++) {
+        Vec3f v = getVertex(i);
+        glBegin(GL_POINTS);
+        glVertex2f(v.x(), v.y());
+        glEnd();
+    }
+}
+
+TriangleMesh* BezierPatch::OutputTriangles(ArgParser* args)
+{
+    TriangleNet* triangles = new TriangleNet(args->patch_tessellation, args->patch_tessellation);
+    for (int i = 0; i <= args->patch_tessellation; ++i)
+    {
+        for (int j = 0; j <= args->patch_tessellation; ++j)
+        {
+            triangles->SetVertex(i, j, getSurfacePointAtParam((float)i / args->patch_tessellation, (float)j / args->patch_tessellation));
+        }
+    }
+
+    return triangles;
+}
