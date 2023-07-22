@@ -24,8 +24,9 @@ public:
   // // FOR GENERATING TRIANGLES
   // virtual TriangleMesh* OutputTriangles(ArgParser* args) override { assert(false); return nullptr; }
 
-protected:
   virtual Vec3f getCurvePointAtParam(float t) const = 0;
+  int getTessellatedCurvePointsNum(int tessellation) { return tessellation * getControlPointsWindowNum(); }
+protected:
   virtual int getControlPointsWindowNum() const = 0;
 
 };
@@ -44,8 +45,8 @@ public:
   
   static const Matrix& GetB() { return B_bezier; }
 
-protected:
   Vec3f getCurvePointAtParam(float t) const override;
+protected:
   int getControlPointsWindowNum() const override;;
   
 private:
@@ -66,8 +67,8 @@ public:
   void addControlPoint(int selectedPoint, float x, float y) override;
   void deleteControlPoint(int selectedPoint) override;
 
-protected:
   Vec3f getCurvePointAtParam(float t) const override;
+protected:
   int getControlPointsWindowNum() const override;
 
 private:

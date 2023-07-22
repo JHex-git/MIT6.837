@@ -1,6 +1,7 @@
 #include "surface.h"
 #include "curve.h"
 #include "arg_parser.h"
+#include <cmath>
 
 void SurfaceOfRevolution::Paint(ArgParser *args)
 {
@@ -11,16 +12,26 @@ SurfaceOfRevolution::SurfaceOfRevolution(Curve* c) : Surface(c->getNumVertices()
 
 TriangleMesh* SurfaceOfRevolution::OutputTriangles(ArgParser* args)
 {
-    TriangleNet triangles(args->revolution_tessellation, args->revolution_tessellation);
-    // triangle.SetTriangle
-    for (int i = 0; i < m_curve->getNumVertices(); ++i)
+    int tessellated_vertex_num = m_curve->getTessellatedCurvePointsNum(args->curve_tessellation);
+    TriangleNet* triangles = new TriangleNet(tessellated_vertex_num, args->revolution_tessellation);
+
+    float delta_radian = 2 * M_PI / args->revolution_tessellation;
+    float theta = 0;
+    for (int i = 0; i <= args->revolution_tessellation; ++i)
     {
-        const auto curve = m_curve->getVertex(0);
-        // triangles.SetVertex(,, Vec3f(curve.x(), curve.y()));
+        for (int j = 0; j <= tessellated_vertex_num; ++j)
+        {
+            const auto curve = m_curve->getCurvePointAtParam((float)j / tessellated_vertex_num);
+            triangles->SetVertex(j, i, Vec3f(curve.x() * std::cos(theta), curve.y(), curve.x() * std::sin(theta)));
+        }
+        theta += delta_radian;
     }
+    
     FILE* file = fopen(args->output_file, "w");
-    triangles.Output(file);
+    triangles->Output(file);
     fclose(file);
+
+    return triangles;
 }
 
 Vec3f BezierPatch::CurveBezier(const Vec3f& p0, const Vec3f& p1, const Vec3f& p2, const Vec3f& p3, float alpha) const
