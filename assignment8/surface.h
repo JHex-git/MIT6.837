@@ -6,14 +6,26 @@
 class Surface : public Spline
 {
 public:
-    Surface(int num_vertices) : Spline(num_vertices) {}
+    Surface() = default;
 
     // FOR VISUALIZATION
-    virtual void Paint(ArgParser *args) override {}
+    virtual void Paint(ArgParser *args) override = 0;
 
-    virtual Vec3f getCurvePointAtParam(float s, float t) const = 0;
+    virtual Vec3f getSurfacePointAtParam(float s, float t) const = 0;
 
-    virtual TriangleMesh* OutputTriangles(ArgParser* args) override {}
+    // FOR CONTROL POINT PICKING
+    virtual int getNumVertices() const = 0;
+    virtual const Vec3f& getVertex(int i) const = 0;
+    virtual void set(int i, Vec3f v) = 0;
+
+    // FOR EDITING OPERATIONS
+    void moveControlPoint(int selectedPoint, float x, float y) override = 0;
+    void addControlPoint(int selectedPoint, float x, float y) override = 0;
+    void deleteControlPoint(int selectedPoint) override = 0;
+
+    virtual TriangleMesh* OutputTriangles(ArgParser* args) override = 0;
+    virtual void OutputBezier(FILE *file) override = 0;
+    virtual void OutputBSpline(FILE *file) override = 0;
 };
 
 class SurfaceOfRevolution : public Surface
@@ -23,10 +35,22 @@ public:
 
     void Paint(ArgParser *args) override;
 
-    Vec3f getCurvePointAtParam(float s, float t) const override { assert(false); }
+    Vec3f getSurfacePointAtParam(float s, float t) const override { assert(false); return Vec3f(0, 0, 0); }
 
+    // FOR CONTROL POINT PICKING
+    virtual int getNumVertices() const override { return m_curve->getNumVertices(); }
+    virtual const Vec3f& getVertex(int i) const override { return m_curve->getVertex(i); }
+    virtual void set(int i, Vec3f v) override { m_curve->set(i, v); }
+
+    // FOR EDITING OPERATIONS
+    void moveControlPoint(int selectedPoint, float x, float y) { m_curve->moveControlPoint(selectedPoint, x, y); }
+    void addControlPoint(int selectedPoint, float x, float y) override { m_curve->addControlPoint(selectedPoint, x, y); }
+    void deleteControlPoint(int selectedPoint) override { m_curve->deleteControlPoint(selectedPoint); }
+
+    // FOR CONVERTING BETWEEN SPLINE TYPES
+    void OutputBezier(FILE *file) override;
+    void OutputBSpline(FILE *file) override;
     TriangleMesh* OutputTriangles(ArgParser* args) override;
-
 private:
     Curve* m_curve;
 };
@@ -34,13 +58,26 @@ private:
 class BezierPatch : public Surface
 {
 public:
-    BezierPatch() : Surface(0) {}
+    BezierPatch() = default;
 
-    Vec3f getCurvePointAtParam(float s, float t) const override;
+    void Paint(ArgParser *args) override { assert(false); }
+
+    Vec3f getSurfacePointAtParam(float s, float t) const override;
+
+    // FOR CONTROL POINT PICKING
+    virtual int getNumVertices() const { assert(false); return 0;}
+    virtual const Vec3f& getVertex(int i) const { assert(false); return Vec3f(0, 0, 0); }
+    virtual void set(int i, Vec3f v) { assert(false); }
+
+    // FOR EDITING OPERATIONS
+    void moveControlPoint(int selectedPoint, float x, float y) override { assert(false); }
+    void addControlPoint(int selectedPoint, float x, float y) override { assert(false); }
+    void deleteControlPoint(int selectedPoint) override { assert(false); }
 
     // FOR CONVERTING BETWEEN SPLINE TYPES
-    virtual void OutputBezier(FILE *file) override { assert(false); }
-    virtual void OutputBSpline(FILE *file) override { assert(false); }
+    void OutputBezier(FILE *file) override { assert(false); }
+    void OutputBSpline(FILE *file) override { assert(false); }
+    TriangleMesh* OutputTriangles(ArgParser* args) override { assert(false); return nullptr; }
 
 private:
     Vec3f CurveBezier(const Vec3f& p0, const Vec3f& p1, const Vec3f& p2, const Vec3f& p3, float alpha) const;

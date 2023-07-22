@@ -221,8 +221,11 @@ void SplineParser::SaveTriangles(ArgParser *args) {
   TriangleMesh mesh = TriangleMesh(0,0);
   for (int i = 0; i < getNumSplines(); i++) {
     TriangleMesh *m2 = getSpline(i)->OutputTriangles(args);
-    mesh.Merge(*m2);
-    delete m2;
+    if (m2 != nullptr)
+    {
+      mesh.Merge(*m2);
+      delete m2;
+    }
   }
   FILE *file = fopen(args->output_file,"w");
   assert (file != NULL);

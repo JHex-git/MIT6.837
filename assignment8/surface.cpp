@@ -8,7 +8,7 @@ void SurfaceOfRevolution::Paint(ArgParser *args)
     m_curve->Paint(args);   
 }
 
-SurfaceOfRevolution::SurfaceOfRevolution(Curve* c) : Surface(c->getNumVertices()), m_curve(c) {}
+SurfaceOfRevolution::SurfaceOfRevolution(Curve* c) : m_curve(c) {}
 
 TriangleMesh* SurfaceOfRevolution::OutputTriangles(ArgParser* args)
 {
@@ -26,12 +26,25 @@ TriangleMesh* SurfaceOfRevolution::OutputTriangles(ArgParser* args)
         }
         theta += delta_radian;
     }
-    
+
     FILE* file = fopen(args->output_file, "w");
     triangles->Output(file);
     fclose(file);
 
     return triangles;
+}
+
+
+void SurfaceOfRevolution::OutputBezier(FILE *file)
+{
+    fprintf(file, "surface_of_revolution\n");
+    m_curve->OutputBezier(file);
+}
+
+void SurfaceOfRevolution::OutputBSpline(FILE *file)
+{
+    fprintf(file, "surface_of_revolution\n");
+    m_curve->OutputBSpline(file);
 }
 
 Vec3f BezierPatch::CurveBezier(const Vec3f& p0, const Vec3f& p1, const Vec3f& p2, const Vec3f& p3, float alpha) const
@@ -40,7 +53,7 @@ Vec3f BezierPatch::CurveBezier(const Vec3f& p0, const Vec3f& p1, const Vec3f& p2
             + 3 * std::pow(alpha, 2) * (1 - alpha) * p2 + std::pow(alpha, 3) * p3;
 }
 
-Vec3f BezierPatch::getCurvePointAtParam(float s, float t) const
+Vec3f BezierPatch::getSurfacePointAtParam(float s, float t) const
 {
     return CurveBezier(CurveBezier(getVertex(0), getVertex(1), getVertex(2), getVertex(3), s),
                        CurveBezier(getVertex(4), getVertex(5), getVertex(6), getVertex(7), s),
