@@ -209,9 +209,8 @@ ForceField* Parser::ParseForceField() {
     answer = new RadialForceField(magnitude);
   } else if (!strcmp(type,"vertical_forcefield")) {
     answer = new VerticalForceField(magnitude);
-    // TODO:
-  // } else if (!strcmp(type,"wind_forcefield")) {
-  //   answer = new WindForceField(magnitude);
+  } else if (!strcmp(type,"wind_forcefield")) {
+    answer = new WindForceField(magnitude);
   } else {
     printf ("WARNING:  unknown forcefield type '%s'\n", type);
   }

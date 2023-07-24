@@ -10,7 +10,7 @@ find_package(GLUT REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR})
 message(WARNING ${CMAKE_SOURCE_DIR})
-add_library(mylib OBJECT src/forcefield.cpp src/generator.cpp src/glCanvas.cpp src/integrator.cpp src/matrix.cpp src/parser.cpp src/particle.cpp src/system.cpp)
+add_library(mylib OBJECT src/forcefield.cpp src/generator.cpp src/glCanvas.cpp src/integrator.cpp src/matrix.cpp src/parser.cpp src/particle.cpp src/system.cpp src/perlin_noise.cpp)
 add_executable(particle_system src/main.cpp)
 target_link_libraries(particle_system mylib ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
 

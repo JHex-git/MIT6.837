@@ -46,4 +46,14 @@ public:
 private:
     float m_magnitude;
 };
+
+class WindForceField : public ForceField {
+public:
+    WindForceField(float magnitude) : m_magnitude(magnitude) {}
+
+    Vec3f getAcceleration(const Vec3f &position, float mass, float t) const override;
+
+private:
+    float m_magnitude;
+};
 #endif
