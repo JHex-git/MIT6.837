@@ -1,7 +1,6 @@
 #ifndef _IFS_H_
 #define _IFS_H_
 #include <vector>
-#include <memory>
 #include <random>
 #include "matrix.h"
 #include "image.h"
@@ -18,8 +17,7 @@ public:
     void Render(Image &image, int num_points, int num_iters) const;
 
 private:
-    int m_num_transforms;
-    std::vector<std::unique_ptr<Matrix>> m_transform_matrices;
+    std::vector<Matrix> m_transform_matrices;
     std::vector<float> m_probabilities;
     
     // used to generate random numbers
