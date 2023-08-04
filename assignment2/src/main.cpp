@@ -36,8 +36,6 @@ char *depth_file = NULL;
 char *normal_file = NULL;
 bool shade_back = false;
 
-constexpr float DELTA = 0.0001f;
-
 int main(int argc, char *argv[])
 {
     // sample command line:
@@ -82,11 +80,11 @@ int main(int argc, char *argv[])
     result.SetAllPixels(scene_parser.getBackgroundColor());
     if (depth_file != NULL) depth_img.SetAllPixels(Vec3f(0, 0, 0));
     if (normal_file != NULL) normal_img.SetAllPixels(Vec3f(0, 0, 0));
-    for (float i = 0; i <= 1; i += 1.0 / size)
+    for (int i = 0; i < size; i++)
     {
-        for (float j = 0; j <= 1; j+= 1.0 / size)
+        for (int j = 0; j < size; j++)
         {
-            auto ray = scene_parser.getCamera()->generateRay(Vec2f(i, j));
+            auto ray = scene_parser.getCamera()->generateRay(Vec2f((float)i / size, (float)j / size));
             bool has_intersect = group->intersect(ray, tmp, scene_parser.getCamera()->getTMin());
             
             if (has_intersect)
@@ -97,7 +95,7 @@ int main(int argc, char *argv[])
                     if (shade_back) normal.Negate();
                     else
                     {
-                        result.SetPixel(i * width + DELTA, j * height + DELTA, Vec3f(0, 0, 0)); // keep back side black
+                        result.SetPixel(i, j, Vec3f(0, 0, 0)); // keep back side black
                         continue;
                     }
                 }
@@ -114,7 +112,7 @@ int main(int argc, char *argv[])
                 }
                 // add ambient light
                 shade_color += tmp.getMaterial()->getDiffuseColor() * scene_parser.getAmbientLight();
-                result.SetPixel(i * width + DELTA, j * height + DELTA, shade_color);
+                result.SetPixel(i, j, shade_color);
 
                 if (depth_file != NULL) 
                 {
@@ -123,12 +121,12 @@ int main(int argc, char *argv[])
                     depth = std::min(depth, depth_max);
                     depth = std::max(depth, depth_min);
                     depth = (depth_max - depth) / (depth_max - depth_min);
-                    depth_img.SetPixel(i * width + DELTA, j * height + DELTA, Vec3f(depth, depth, depth));
+                    depth_img.SetPixel(i, j, Vec3f(depth, depth, depth));
                 }
                 if (normal_file != NULL)
                 {
                     Vec3f abs_normal = Vec3f(std::abs(normal.x()), std::abs(normal.y()), std::abs(normal.z()));
-                    normal_img.SetPixel(i * width + DELTA, j * height + DELTA, abs_normal);
+                    normal_img.SetPixel(i, j, abs_normal);
                 }
             }
         }

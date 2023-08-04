@@ -17,7 +17,7 @@ public:
 
 protected:
     Material* m_material;
-};  
+};
 } // namespace object3ds
 
 

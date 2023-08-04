@@ -39,14 +39,14 @@ void Sphere::paint(void)
     glBegin(GL_QUADS);
     float phi_step = 180.0 / phi_steps;
     float theta_step = 360.0 / theta_steps;
-    for (float iPhi = -90; iPhi <= 90; iPhi += phi_step)
+    for (float iPhi = -90; iPhi < 90; iPhi += phi_step)
     {
-        for (float iTheta = 0; iTheta <= 360; iTheta += theta_step)
+        for (float iTheta = 0; iTheta < 360; iTheta += theta_step)
         {
             Vec3f p1 = getCoordinate(iPhi, iTheta);
-            Vec3f p2 = getCoordinate(iPhi, iTheta + theta_step);
-            Vec3f p3 = getCoordinate(iPhi + phi_step, iTheta + theta_step);
-            Vec3f p4 = getCoordinate(iPhi + phi_step, iTheta);
+            Vec3f p2 = getCoordinate(iPhi, std::min(iTheta + theta_step, 360.f));
+            Vec3f p3 = getCoordinate(std::min(iPhi + phi_step, 90.f), std::min(iTheta + theta_step, 360.f));
+            Vec3f p4 = getCoordinate(std::min(iPhi + phi_step, 90.f), iTheta);
             Vec3f normal;
             if (!gouraud) 
             {

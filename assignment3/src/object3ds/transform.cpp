@@ -17,7 +17,7 @@ bool Transform::intersect(const Ray &r, Hit &h, float tmin)
     dir.Normalize();
     scale = scale / dir.Length();
     Ray ray(orig, dir);
-    if (m_object->intersect(ray, h, tmin) && h.getT() * scale > tmin)
+    if (m_object->intersect(ray, h, tmin * scale))
     {
         Vec3f normal = h.getNormal();
         m_mat_normalWS2OS.TransformDirection(normal);

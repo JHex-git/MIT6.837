@@ -67,12 +67,8 @@ Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight,
         {
             Ray reflect_ray(ray.pointAtParameter(hit.getT()), mirrorDirection(normal, ray.getDirection()));
             Hit reflect_hit;
-            // color += reflective_color * traceRay(reflect_ray, tmin, bounces + 1, weight * reflective_color.Length(), indexOfRefraction, reflect_hit);
             color += reflective_color * traceRay(reflect_ray, epsilon, bounces + 1, weight * reflective_color.Length() / std::sqrt(3), indexOfRefraction, reflect_hit);
-            if (reflect_hit.getT() != 0)
-            {
-                RayTree::AddReflectedSegment(reflect_ray, 0, reflect_hit.getT());
-            }
+            RayTree::AddReflectedSegment(reflect_ray, 0, reflect_hit.getT() > epsilon ? reflect_hit.getT() : 100);
         }
 
         Vec3f transparent_color = hit.getMaterial()->getTransparentColor();
@@ -88,12 +84,8 @@ Vec3f RayTracer::traceRay(const Ray &ray, float tmin, int bounces, float weight,
             {
                 Ray transmitted_ray(ray.pointAtParameter(hit.getT()), transmitted_direction);
                 Hit transmitted_hit;
-                // transmitted_color = traceRay(transmitted_ray, tmin, bounces + 1, weight * transparent_color.Length(), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
                 color += transparent_color * traceRay(transmitted_ray, epsilon, bounces + 1, weight * transparent_color.Length() / std::sqrt(3), hit.getMaterial()->getIndexOfRefraction(), transmitted_hit);
-                if (transmitted_hit.getT() != 0)
-                {
-                    RayTree::AddTransmittedSegment(transmitted_ray, 0, transmitted_hit.getT());
-                }
+                RayTree::AddTransmittedSegment(transmitted_ray, 0, transmitted_hit.getT() > epsilon ? transmitted_hit.getT() : 100);
             }
         }
     }
@@ -124,21 +116,5 @@ bool RayTracer::transmittedDirection(const Vec3f &normal, const Vec3f &incoming,
     transmitted = (index_r * n.Dot3(i) - std::sqrt(1 - index_r * index_r * (1 - n.Dot3(i) * n.Dot3(i)))) * n - index_r * i;
     transmitted.Normalize();
     return true;
-        //I=-incoming
-    // float cos_i = normal.Dot3(-1.0f * incoming);
-    // // std::cout << "n dot i:" << n.Dot3(i) << std::endl;
-    // // std::cout << "cos_i: " << cos_i << std::endl;
-    // float eta_r = index_i / index_t;
-    // // std::cout << "index_r: " << index_r << std::endl;
-    // // std::cout << "eta_r: " << eta_r << std::endl;
-    // float squ_cos_t = 1.0f - eta_r * eta_r * (1.0f - cos_i * cos_i);
-    // // std::cout << "discriminant: " << discriminant << std::endl;
-    // // std::cout << "squ_cos_t: " << squ_cos_t << std::endl;
-    // // std::cout << "transmittedL " << transmitted << std::endl;
-    // if (squ_cos_t < 0) { return false; }
-    // transmitted = normal * (eta_r * cos_i - std::sqrt(squ_cos_t)) + incoming * eta_r;
-    // transmitted.Normalize();
-    // // std::cout << "transmittedL " << transmitted << std::endl;
-    // return true;
 }
 } // namespace raytrace

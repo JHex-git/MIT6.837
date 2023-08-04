@@ -68,11 +68,11 @@ int main(int argc, char *argv[])
     int size = std::min(width, height);
     result.SetAllPixels(scene_parser.getBackgroundColor());
     depth_img.SetAllPixels(Vec3f(0, 0, 0));
-    for (float i = 0; i <= 1; i += 1.0 / size)
+    for (int i = 0; i < size; i++)
     {
-        for (float j = 0; j <= 1; j+= 1.0 / size)
+        for (int j = 0; j < size; j++)
         {
-            auto ray = scene_parser.getCamera()->generateRay(Vec2f(i, j));
+            auto ray = scene_parser.getCamera()->generateRay(Vec2f((float)i / size, (float)j / size));
             bool has_intersect = group->intersect(ray, tmp, scene_parser.getCamera()->getTMin());
             
             if (has_intersect)
@@ -83,8 +83,8 @@ int main(int argc, char *argv[])
                 depth = std::max(depth, depth_min);
                 depth = (depth_max - depth) / (depth_max - depth_min);
 
-                result.SetPixel(i * width, j * height, tmp.getMaterial()->getDiffuseColor());
-                depth_img.SetPixel(i * width, j * height, Vec3f(depth, depth, depth));
+                result.SetPixel(i, j, tmp.getMaterial()->getDiffuseColor());
+                depth_img.SetPixel(i, j, Vec3f(depth, depth, depth));
             }
         }
     }
