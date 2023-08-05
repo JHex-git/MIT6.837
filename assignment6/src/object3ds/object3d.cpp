@@ -10,6 +10,7 @@ namespace object3ds
 void Object3D::insertIntoGrid(Grid *g, Matrix *m)
 {
     constexpr float epsilon = 0.0001;
+    if (m_bounding_box == nullptr) return;
     auto min = m_bounding_box->getMin();
     auto max = m_bounding_box->getMax();
     if (m != nullptr)

@@ -29,6 +29,7 @@ void Curve::Paint(ArgParser *args) {
         glVertex2f(v2.x(), v2.y());
         t1 = t2;
         t2 += delta;
+        t2 = std::min(t2, 1.0f);
     }
     glEnd();
 
@@ -88,9 +89,9 @@ void BezierCurve::OutputBSpline(FILE *file)
 
     fprintf(file, "bspline\n");
     fprintf(file, "num_vertices %d\n", vertices.size());
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < vertices.size(); ++i)
     {
-        fprintf(file, "%f %f %f\n", G_bezier.Get(i, 0), G_bezier.Get(i, 1), G_bezier.Get(i, 2));
+        fprintf(file, "%f %f %f\n", vertices[i].x(), vertices[i].y(), vertices[i].z());
     }
 }
 
